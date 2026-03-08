@@ -89,6 +89,11 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
 }
 
+/* FIX Hair Ups image specifically */
+.service-image img[src*="hairup"]{
+    transform:scale(1.8);
+}
+
 /* ============================================
    HERO
 ============================================ */
@@ -266,18 +271,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .service-card:hover .service-image img {
     transform: scale(1.08);
-}
-
-.service-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 45%, rgba(26, 26, 26, 0.9) 78%);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0 1.8rem 3rem;
-    text-align: center;
 }
 
 .service-overlay h3 {
