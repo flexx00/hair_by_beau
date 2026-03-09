@@ -1,20 +1,20 @@
 /* ============================================
-   ROOT VARIABLES
+   ROOT VARIABLES — Dark Grey with Light Pink Tone & Gold/Pink luxury theme
 ============================================ */
 :root {
-    --dark-bg: #1a1a1a;
-    --charcoal: #222222;           /* Darker charcoal for better contrast */
-    --deep-gray: #2d2d2d;
-    --light-gray: #4a4a4a;
-    --gold: #d4af37;
-    --rose-gold: #b76e79;
-    --silver: #c0c0c0;
-    --white: #f8f9fa;
-    --accent-gold: #c9a96e;
-    --accent-burgundy: #8b2635;
-    --accent-teal: #2a9d8f;
-    --gradient: linear-gradient(135deg, var(--gold), var(--rose-gold));
-    --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --dark-bg:        #2a1f24;           /* Dark grey with subtle light pink/plum undertone */
+    --charcoal:       #32272d;           /* Deeper pink-tinted charcoal for cards/sections */
+    --deep-gray:      #2c2227;           /* Slightly varied dark pinkish-grey */
+    --light-gray:     #4a3842;           /* Muted pinkish mid-grey for borders/subtle accents */
+    --gold:           #e8c07c;           /* Warm elegant gold */
+    --rose-gold:      #d89fa8;           /* Classic rose gold */
+    --silver:         #d0c0c8;           /* Soft pinkish-silver for highlights */
+    --white:          #f0e8ed;           /* Very soft pink-tinted off-white for text */
+    --accent-gold:    #f4d08c;           /* Brighter gold accent */
+    --accent-pink:    #e89eb8;           /* Soft vibrant pink accent */
+    --accent-rose:    #b76e79;           /* Core rose-gold tone */
+    --gradient:       linear-gradient(135deg, var(--gold), var(--rose-gold));
+    --transition:     all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* ============================================
@@ -32,22 +32,23 @@ body {
     color: var(--white);
     line-height: 1.7;
     overflow-x: hidden;
-    padding-top: 70px; /* Prevents fixed navbar overlap */
+    padding-top: 70px;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
     font-weight: 600;
+    color: var(--accent-gold);
 }
 
 /* ============================================
    NAVBAR
 ============================================ */
 .navbar {
-    background-color: rgba(10, 10, 10, 0.96);
+    background-color: rgba(42, 31, 36, 0.96); /* Dark grey with faint pink tint */
     backdrop-filter: blur(12px);
     padding: 1rem 0;
-    border-bottom: 1px solid rgba(201, 169, 110, 0.12);
+    border-bottom: 1px solid rgba(244, 208, 140, 0.18);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -62,7 +63,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar-nav .nav-link {
-    color: var(--white);
+    color: var(--silver);
     font-weight: 500;
     margin: 0 1rem;
     position: relative;
@@ -91,7 +92,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* FIX Hair Ups image specifically */
 .service-image img[src*="hairup"]{
-    transform:scale(1.8);
+    transform: scale(1.8);
 }
 
 /* ============================================
@@ -100,7 +101,7 @@ h1, h2, h3, h4, h5, h6 {
 .hero {
     height: 100vh;
     min-height: 720px;
-    background: linear-gradient(rgba(10, 10, 10, 0.72), rgba(10, 10, 10, 0.72)),
+    background: linear-gradient(rgba(42, 31, 36, 0.78), rgba(42, 31, 36, 0.78)),
                 url('images/hero bg.avif') no-repeat center center/cover;
     display: flex;
     align-items: center;
@@ -117,16 +118,16 @@ h1, h2, h3, h4, h5, h6 {
 .hero h1 {
     font-size: clamp(3.5rem, 9vw, 6rem);
     margin-bottom: 1.5rem;
-    background: linear-gradient(90deg, var(--gold), var(--rose-gold), var(--silver));
+    background: linear-gradient(90deg, var(--gold), var(--rose-gold), var(--accent-gold));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: glow 2.5s ease-in-out infinite alternate;
+    animation: glow 2.8s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
-    from { text-shadow: 0 0 12px rgba(212, 175, 55, 0.5); }
-    to   { text-shadow: 0 0 28px rgba(212, 175, 55, 0.7), 0 0 45px rgba(183, 110, 121, 0.5); }
+    from { text-shadow: 0 0 14px rgba(232, 192, 124, 0.6); }
+    to   { text-shadow: 0 0 32px rgba(232, 192, 124, 0.8), 0 0 50px rgba(216, 159, 168, 0.6); }
 }
 
 .hero p {
@@ -135,6 +136,7 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    color: var(--silver);
 }
 
 /* ============================================
@@ -143,19 +145,19 @@ h1, h2, h3, h4, h5, h6 {
 .btn-primary-custom {
     background: var(--gradient);
     border: none;
-    color: var(--dark-bg);
+    color: #1e1e1e;
     padding: 14px 36px;
     border-radius: 50px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1.1px;
     transition: var(--transition);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.28);
+    box-shadow: 0 6px 20px rgba(232, 192, 124, 0.35);
 }
 
 .btn-primary-custom:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(212, 175, 55, 0.45);
+    box-shadow: 0 12px 32px rgba(232, 192, 124, 0.55);
 }
 
 .btn-outline-custom {
@@ -172,7 +174,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-outline-custom:hover {
     background: var(--gold);
-    color: var(--dark-bg);
+    color: #1e1e1e;
     transform: translateY(-3px);
 }
 
@@ -185,7 +187,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .section-title h2 {
     font-size: 2.8rem;
-    color: var(--gold);
+    color: var(--accent-gold);
     margin-bottom: 1.4rem;
     position: relative;
     display: inline-block;
@@ -206,7 +208,7 @@ h1, h2, h3, h4, h5, h6 {
    ABOUT SECTION
 ============================================ */
 .about {
-    background-color: var(--deep-gray);
+    background-color: var(--charcoal);
     padding: 6rem 0;
 }
 
@@ -215,18 +217,18 @@ h1, h2, h3, h4, h5, h6 {
     height: auto;
     object-fit: cover;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     transition: transform 0.6s ease, box-shadow 0.6s ease;
 }
 
 .about-image:hover img {
     transform: scale(1.04);
-    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 15px 40px rgba(232, 192, 124, 0.3);
 }
 
 .about-content h2 {
     font-size: 2.4rem;
-    color: var(--gold);
+    color: var(--accent-gold);
     margin-bottom: 1.5rem;
 }
 
@@ -242,17 +244,17 @@ h1, h2, h3, h4, h5, h6 {
 ============================================ */
 .service-card {
     background-color: var(--charcoal);
-    border-radius: 0;
+    border-radius: 12px;
     overflow: hidden;
     margin-bottom: 2.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     transition: var(--transition);
     position: relative;
 }
 
 .service-card:hover {
     transform: translateY(-12px);
-    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.18);
+    box-shadow: 0 20px 40px rgba(232, 192, 124, 0.25);
 }
 
 .service-image {
@@ -270,7 +272,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .service-overlay h3 {
-    color: var(--gold);
+    color: var(--accent-gold);
     font-size: 1.75rem;
     margin-bottom: 0.8rem;
     text-shadow: 0 2px 12px rgba(0,0,0,0.85);
@@ -296,13 +298,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pricing-card {
-    background: linear-gradient(145deg, #151515, #0f0f0f);
+    background: #352b32;                 /* Slightly warmer pink-tinted dark grey */
     border-radius: 16px;
     padding: 2.5rem 2rem;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
     transition: var(--transition);
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(244, 208, 140, 0.18);
     position: relative;
     overflow: hidden;
 }
@@ -314,13 +316,13 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     width: 100%;
     height: 5px;
-    background: linear-gradient(to right, var(--accent-gold), var(--accent-burgundy));
+    background: linear-gradient(to right, var(--accent-gold), var(--accent-pink));
 }
 
 .pricing-card:hover {
     transform: translateY(-12px);
-    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.22);
-    border-color: var(--gold);
+    box-shadow: 0 20px 45px rgba(232, 192, 124, 0.3);
+    border-color: var(--accent-gold);
 }
 
 .price {
@@ -336,21 +338,20 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ============================================
    APPOINTMENT & FORM STYLES
-   → All text forced to white
 ============================================ */
 .appointment {
-    background: linear-gradient(135deg, var(--dark-bg), var(--deep-gray));
+    background: linear-gradient(135deg, var(--dark-bg), var(--charcoal));
     padding: 6rem 0;
 }
 
 .appointment-form,
 .contact-info {
     background-color: var(--charcoal);
-    border: 1px solid rgba(var(--gold), 0.18);
+    border: 1px solid rgba(var(--gold), 0.25);
     border-radius: 12px;
 }
 
-/* Force ALL form text to white */
+/* Form text light for dark bg */
 .form-label,
 .form-control,
 .form-select,
@@ -363,16 +364,16 @@ input[type="time"]::-webkit-datetime-edit,
     color: var(--white) !important;
 }
 
-/* Placeholder text white + opacity */
+/* Placeholder */
 .form-control::placeholder {
-    color: rgba(248, 249, 250, 0.65) !important;
+    color: rgba(240, 232, 237, 0.6) !important;
     opacity: 1;
 }
 
-/* Input / Select borders & background */
+/* Input / Select – subtle pink-grey tone */
 .form-control,
 .form-select {
-    background-color: var(--deep-gray);
+    background-color: #3a2c34;
     border: 1px solid var(--light-gray);
     color: var(--white);
 }
@@ -380,25 +381,25 @@ input[type="time"]::-webkit-datetime-edit,
 .form-control:focus,
 .form-select:focus {
     border-color: var(--accent-gold);
-    box-shadow: 0 0 0 0.25rem rgba(201, 169, 110, 0.25);
-    background-color: var(--deep-gray);
+    box-shadow: 0 0 0 0.25rem rgba(244, 208, 140, 0.3);
+    background-color: #3a2c34;
 }
 
-/* Calendar & time picker icons white */
+/* Calendar & time picker icons */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
-    filter: invert(1) brightness(2);
+    filter: invert(0.9) brightness(1.8);
 }
 
-/* Select dropdown arrow white */
+/* Select dropdown arrow */
 .form-select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23f8f9fa' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23f0e8ed' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
 }
 
-/* Alert message text white */
+/* Alert styling */
 .alert-info {
-    background-color: rgba(201, 169, 110, 0.12);
-    border-color: rgba(201, 169, 110, 0.35);
+    background-color: rgba(244, 208, 140, 0.12);
+    border-color: rgba(244, 208, 140, 0.35);
     color: var(--white) !important;
 }
 
@@ -437,4 +438,4 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     .price {
         font-size: 2.6rem;
     }
-} 
+}
