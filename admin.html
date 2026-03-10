@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Hair By Beau</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> <!-- reuse your styles -->
+    <style>
+        body { background: #1a1a1a; color: #f8f9fa; font-family: 'Poppins', sans-serif; }
+        .admin-container { max-width: 1200px; margin: 40px auto; padding: 20px; background: #222; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        .login-box { max-width: 400px; margin: 100px auto; padding: 40px; background: #2c2c2c; border-radius: 12px; text-align: center; }
+        .hidden { display: none !important; }
+        table { --bs-table-bg: #2c2c2c; --bs-table-color: #e9ecef; --bs-table-striped-bg: #333; }
+        th { background: #3a3a3a !important; color: #ffd700; }
+        .btn-gold { background-color: #d4af37; color: #1a1a1a; border: none; }
+        .btn-gold:hover { background-color: #e6c24f; color: #1a1a1a; }
+        .btn-outline-gold { border-color: #d4af37; color: #d4af37; }
+        .btn-outline-gold:hover { background-color: #d4af37; color: #1a1a1a; }
+        .card-gold-border { border-color: #d4af37 !important; }
+        .text-gold { color: #d4af37 !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-box">
+        <h2 class="mb-4 text-gold"><i class="fas fa-lock me-2"></i> Admin Access</h2>
+        <p class="text-white-75 mb-4">Enter your secure password</p>
+        <input type="password" id="adminPassword" class="form-control mb-3" placeholder="Password..." autocomplete="off">
+        <button onclick="checkPassword()" class="btn btn-primary-custom w-100">Login</button>
+        <p class="mt-4 small text-danger" id="errorMsg"></p>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-container hidden">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5 gap-3">
+            <h1 class="text-gold mb-0"><i class="fas fa-user-shield me-3"></i>Hair By Beau Admin</h1>
+            <button onclick="logout()" class="btn btn-outline-danger"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+        </div>
+
+        <!-- Square Dashboard Quick Access -->
+        <div class="text-center mb-5">
+            <p class="lead text-white-75 mb-4">View & manage real appointments in Square</p>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="https://squareup.com/dashboard/appointments/calendar" target="_blank" class="btn btn-lg btn-gold">
+                    <i class="fas fa-calendar-alt me-2"></i> Open Calendar
+                </a>
+                <a href="https://squareup.com/dashboard/appointments/bookings" target="_blank" class="btn btn-lg btn-outline-gold">
+                    <i class="fas fa-list-check me-2"></i> All Bookings List
+                </a>
+                <a href="https://squareup.com/dashboard/appointments" target="_blank" class="btn btn-lg btn-outline-gold">
+                    <i class="fas fa-cog me-2"></i> Full Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Stats (placeholders - update manually if desired) -->
+        <div class="row mb-5 text-center">
+            <div class="col-md-4 mb-3">
+                <div class="card bg-charcoal text-white card-gold-border">
+                    <div class="card-body">
+                        <h5>Today's Bookings</h5>
+                        <h2 id="todayCount">—</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-charcoal text-white card-gold-border">
+                    <div class="card-body">
+                        <h5>This Week</h5>
+                        <h2 id="weekCount">—</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-charcoal text-white card-gold-border">
+                    <div class="card-body">
+                        <h5>Revenue (example)</h5>
+                        <h2>£—</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Table (static example) -->
+        <h3 class="text-gold mb-3"><i class="fas fa-calendar-check me-2"></i>Upcoming Appointments (Example)</h3>
+        <p class="text-white-50 small mb-4">
+            <strong>Important:</strong> This table shows example data only.<br>
+            For <strong>live & accurate</strong> bookings, use the Square links above (Calendar shows upcoming ones best).
+        </p>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Client</th>
+                        <th>Service</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsTable"></tbody>
+            </table>
+        </div>
+
+        <hr class="my-5 border-gold">
+
+        <!-- Quick service price editor (browser-only) -->
+        <h4 class="text-gold mb-3">Quick Price Editor (saved in this browser only)</h4>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label text-white-75">Wash / Blow Dry</label>
+                <input type="number" id="priceWash" class="form-control" value="25">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-white-75">Hair Dye / Colouring</label>
+                <input type="number" id="priceColor" class="form-control" value="35">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-white-75">Styling</label>
+                <input type="number" id="priceStyle" class="form-control" value="15">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-white-75">Hair Ups</label>
+                <input type="number" id="priceUp" class="form-control" value="20">
+            </div>
+        </div>
+        <button onclick="savePrices()" class="btn btn-primary-custom mt-4">Save Prices</button>
+    </div>
+
+    <script>
+        // CHANGE THIS PASSWORD IMMEDIATELY
+        const REAL_PASSWORD = "beau123admin!!"; // ← Make it strong & unique!
+
+        function checkPassword() {
+            const input = document.getElementById("adminPassword").value.trim();
+            const error = document.getElementById("errorMsg");
+
+            if (input === REAL_PASSWORD) {
+                localStorage.setItem("hbAdminAuth", "true"); // better key name
+                document.getElementById("loginScreen").classList.add("hidden");
+                document.getElementById("adminDashboard").classList.remove("hidden");
+                loadAdminData();
+            } else {
+                error.textContent = "Incorrect password. Try again.";
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("hbAdminAuth");
+            document.getElementById("adminDashboard").classList.add("hidden");
+            document.getElementById("loginScreen").classList.remove("hidden");
+            document.getElementById("adminPassword").value = "";
+            document.getElementById("errorMsg").textContent = "";
+        }
+
+        function loadAdminData() {
+            // Example bookings — feel free to update these manually
+            const exampleBookings = [
+                { date: "2026-03-11 11:30", client: "Emma Wilson", service: "Hair Dye / Colouring", price: "£35", status: "Confirmed" },
+                { date: "2026-03-12 14:00", client: "Sophia Lee", service: "Hair Ups", price: "£20", status: "Pending" },
+                { date: "2026-03-14 15:45", client: "Olivia Brown", service: "Wash / Blow Dry", price: "£25", status: "Confirmed" },
+                { date: "2026-03-17 10:00", client: "Isabella Clark", service: "Styling", price: "£15", status: "Confirmed" }
+            ];
+
+            const tbody = document.getElementById("bookingsTable");
+            tbody.innerHTML = "";
+            exampleBookings.forEach(b => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${b.date}</td>
+                    <td>${b.client}</td>
+                    <td>${b.service}</td>
+                    <td>${b.price}</td>
+                    <td><span class="badge bg-success">${b.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Load saved prices
+            document.getElementById("priceWash").value  = localStorage.getItem("hbPriceWash")  || "25";
+            document.getElementById("priceColor").value = localStorage.getItem("hbPriceColor") || "35";
+            document.getElementById("priceStyle").value = localStorage.getItem("hbPriceStyle") || "15";
+            document.getElementById("priceUp").value    = localStorage.getItem("hbPriceUp")    || "20";
+        }
+
+        function savePrices() {
+            localStorage.setItem("hbPriceWash",  document.getElementById("priceWash").value);
+            localStorage.setItem("hbPriceColor", document.getElementById("priceColor").value);
+            localStorage.setItem("hbPriceStyle", document.getElementById("priceStyle").value);
+            localStorage.setItem("hbPriceUp",    document.getElementById("priceUp").value);
+            alert("Prices saved in this browser only!");
+        }
+
+        // Auto-login if previously authenticated
+        if (localStorage.getItem("hbAdminAuth") === "true") {
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("adminDashboard").classList.remove("hidden");
+            loadAdminData();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
