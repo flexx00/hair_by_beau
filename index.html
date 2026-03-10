@@ -26,6 +26,10 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <!-- Admin link added here at the top/left side of the menu -->
+                    <li class="nav-item">
+                        <a class="nav-link admin-link" href="/admin" target="_blank">Admin Panel</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#home">Home</a>
                     </li>
@@ -92,53 +96,77 @@
     <!-- Services section -->
     <section id="services" class="services py-5">
         <div class="container">
-            <div class="section-title text-center mb-5" data-aos="fade-up">
-                <h2>Our Services</h2>
-            </div>
+            <h2 class="text-center text-gold mb-5" data-aos="fade-up">Our Signature Services</h2>
             <div class="row g-4">
-                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="images/wash.png" alt="Wash and Blow Dry service">
-                        </div>
-                        <div class="service-content">
-                            <h3>Wash / Blow Dry</h3>
-                            <p>Quality washing and blow drying skills to make you look the best.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="images/color.png" alt="Hair Dye and Colouring service">
-                        </div>
-                        <div class="service-content">
-                            <h3>Hair Dye / Colouring</h3>
-                            <p>Where luxury meets perfect colour.</p>
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card bg-charcoal text-white card-gold-border service-card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-wind fa-3x text-gold mb-3"></i>
+                            <h4>Wash / Blow Dry</h4>
+                            <p>Deep cleanse, luxurious wash, professional blow-dry for smooth, voluminous results.</p>
+                            <p class="price-display">£<span id="displayWash">25</span></p>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="images/styling.png" alt="Styling service">
-                        </div>
-                        <div class="service-content">
-                            <h3>Styling</h3>
-                            <p>Elevate your look with refined styling.</p>
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card bg-charcoal text-white card-gold-border service-card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-paint-brush fa-3x text-gold mb-3"></i>
+                            <h4>Hair Dye / Colouring</h4>
+                            <p>Full head colour, root touch-ups, balayage or highlights with premium products.</p>
+                            <p class="price-display">£<span id="displayColor">35</span></p>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-card">
-                        <div class="service-image">
-                            <img src="images/hairup.png" alt="Hair Ups service" class="hairup-img">
-                        </div>
-                        <div class="service-content">
-                            <h3>Hair Ups</h3>
-                            <p>Elegant hair, beautifully elevated.</p>
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card bg-charcoal text-white card-gold-border service-card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-cut fa-3x text-gold mb-3"></i>
+                            <h4>Styling</h4>
+                            <p>Precision cuts, modern layers, or classic shapes — tailored to your face & lifestyle.</p>
+                            <p class="price-display">£<span id="displayStyle">15</span></p>
                         </div>
                     </div>
+                </div>
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card bg-charcoal text-white card-gold-border service-card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-crown fa-3x text-gold mb-3"></i>
+                            <h4>Hair Ups</h4>
+                            <p>Elegant updos for weddings, events or special occasions — secure & long-lasting.</p>
+                            <p class="price-display">£<span id="displayUp">20</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing section -->
+    <section id="pricing" class="pricing py-5 bg-dark">
+        <div class="container">
+            <h2 class="text-center text-gold mb-5" data-aos="fade-up">Transparent Pricing</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-dark table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Starting From</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Wash / Blow Dry</td><td>£25</td><td>Short – long hair variations</td></tr>
+                                <tr><td>Hair Dye / Colouring</td><td>£35</td><td>Full head / roots / highlights extra</td></tr>
+                                <tr><td>Styling / Cut</td><td>£15</td><td>Precision cut add-on</td></tr>
+                                <tr><td>Hair Ups / Event Styling</td><td>£20</td><td>Trial sessions available</td></tr>
+                                <tr><td>Consultation</td><td>Free</td><td>Colour & style planning</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-center mt-4 small text-white-50">Prices updated March 2026. Final quote after consultation. Add-ons (toners, treatments) extra.</p>
                 </div>
             </div>
         </div>
