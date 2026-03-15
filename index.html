@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,55 +10,166 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- AOS library for scroll animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" integrity="sha512-1cK78a1a+ht23caW6g80XYwqpev9+6Gq0kz9xmBN9iUUhIndKtxwILGWYOSibOKjLsEdjyjZvYDq/cZwNeak@w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- AOS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+        integrity="sha512-1cK78a1a+ht23caW6g80XYwqpev9+6Gq0kz9xmBN9iUUhIndKtxwILGWYOSibOKjLsEdjyjZvYDq/cZwNeak@w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Custom styling -->
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png">
+
+    <style>
+        :root {
+            --gold: #d4af37;
+            --pink: #f8c8dc;
+            --dark: #111;
+            --charcoal: #1a1a1a;
+            --border-gold: rgba(212, 175, 55, 0.3);
+        }
+
+        .service-btn.active {
+            background-color: var(--gold) !important;
+            color: var(--dark) !important;
+            border-color: var(--gold) !important;
+        }
+
+        .day-card {
+            min-width: 90px;
+            background: var(--charcoal);
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .day-card:hover:not(.disabled) {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .day-card.selected {
+            background: var(--gold) !important;
+            color: var(--dark) !important;
+            border-color: var(--gold);
+        }
+
+        .day-card.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #0f0f0f;
+        }
+
+        .day-card .weekday {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .day-card .date {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .day-card .month {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .time-slot {
+            min-width: 100px;
+            padding: 16px;
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            background: var(--charcoal);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .time-slot:hover:not(.disabled) {
+            border-color: var(--pink);
+            background: rgba(248, 200, 220, 0.1);
+        }
+
+        .time-slot.selected {
+            background: var(--pink) !important;
+            color: var(--dark) !important;
+            border-color: var(--pink);
+        }
+
+        .time-slot.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #0f0f0f;
+            border-color: #333;
+        }
+
+        .calendar-scroll {
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) #222;
+        }
+
+        .calendar-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .calendar-scroll::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+
+        #calendar-container,
+        #time-container {
+            background: #222;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #444;
+        }
+    </style>
 </head>
+
 <body data-bs-spy="scroll" data-bs-target="#navbarSupportedContent" data-bs-offset="70">
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">Hair By Beau</a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <!-- Admin link added here at the top/left side of the menu -->
                     <li class="nav-item">
-                        <a class="nav-link admin-link" href="/admin" target="_blank">Admin Panel</a>
+                        <a class="nav-link admin-link" href="#" onclick="checkAdminAccess(); return false;">Admin
+                            Panel</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#services">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#pricing">Pricing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#appointment">Book Now</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#appointment">Book Now</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Hero section -->
+    <!-- Hero -->
     <section id="home" class="hero mt-5 mt-lg-0">
         <div class="container">
             <div class="row">
                 <div class="col-12">
                     <div class="hero-content text-center">
                         <h1>Transform Your Style</h1>
-                        <p>Hair By Beau offers premium grooming experiences for women. Our expert stylist creates amazing looks!</p>
+                        <p>Hair By Beau offers premium grooming experiences for women. Our expert stylist creates
+                            amazing looks!</p>
                         <div class="hero-buttons d-flex flex-column flex-sm-row justify-content-center gap-3">
                             <a href="#appointment" class="btn btn-primary-custom">Book Appointment</a>
                             <a href="#services" class="btn btn-outline-custom">Explore Services</a>
@@ -68,7 +180,7 @@
         </div>
     </section>
 
-    <!-- About section -->
+    <!-- About -->
     <section id="about" class="about py-5">
         <div class="container">
             <div class="section-title text-center mb-5" data-aos="fade-up">
@@ -77,15 +189,20 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
                     <div class="about-image">
-                        <img src="images/about1.avif" alt="Beau-Lily stylist creating elegant hairstyle" class="img-fluid rounded shadow">
+                        <img src="images/about1.avif" alt="Beau-Lily stylist creating elegant hairstyle"
+                            class="img-fluid rounded shadow">
                     </div>
                 </div>
                 <div class="col-lg-6" data-aos="fade-left">
                     <div class="about-content ps-lg-4">
                         <h2>Where Style Meets Profession</h2>
-                        <p>At Hair By Beau, we believe that everyone deserves to look and feel their best. Our salon combines modern techniques with timeless style to create personalized looks for each client.</p>
-                        <p>Our stylists stay updated with the latest trends and techniques to ensure you receive the highest quality service in a luxurious and comfortable environment.</p>
-                        <p>Whether you're preparing for a special occasion or simply maintaining your signature look, we're dedicated to making your experience exceptional from start to finish.</p>
+                        <p>At Hair By Beau, we believe that everyone deserves to look and feel their best. Our salon
+                            combines modern techniques with timeless style to create personalized looks for each client.
+                        </p>
+                        <p>Our stylists stay updated with the latest trends and techniques to ensure you receive the
+                            highest quality service in a luxurious and comfortable environment.</p>
+                        <p>Whether you're preparing for a special occasion or simply maintaining your signature look,
+                            we're dedicated to making your experience exceptional from start to finish.</p>
                         <a href="#appointment" class="btn btn-primary-custom mt-3">Book Now</a>
                     </div>
                 </div>
@@ -93,7 +210,7 @@
         </div>
     </section>
 
-    <!-- Services section -->
+    <!-- Services -->
     <section id="services" class="services py-5">
         <div class="container">
             <h2 class="text-center text-gold mb-5" data-aos="fade-up">Our Signature Services</h2>
@@ -142,7 +259,7 @@
         </div>
     </section>
 
-    <!-- Pricing section -->
+    <!-- Pricing -->
     <section id="pricing" class="pricing py-5 bg-dark">
         <div class="container">
             <h2 class="text-center text-gold mb-5" data-aos="fade-up">Pricing</h2>
@@ -158,44 +275,37 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td>Wash / Blow Dry</td><td>£25</td><td>Short – long hair variations</td></tr>
-                                <tr><td>Hair Dye / Colouring</td><td>£35</td><td>Full head / roots / highlights extra</td></tr>
-                                <tr><td>Styling / Cut</td><td>£15</td><td>Precision cut add-on</td></tr>
-                                <tr><td>Hair Ups / Event Styling</td><td>£20</td><td>Trial sessions available</td></tr>
+                                <tr>
+                                    <td>Wash / Blow Dry</td>
+                                    <td>£25</td>
+                                    <td>Short – long hair variations</td>
+                                </tr>
+                                <tr>
+                                    <td>Hair Dye / Colouring</td>
+                                    <td>£35</td>
+                                    <td>Full head / roots / highlights extra</td>
+                                </tr>
+                                <tr>
+                                    <td>Styling / Cut</td>
+                                    <td>£15</td>
+                                    <td>Precision cut add-on</td>
+                                </tr>
+                                <tr>
+                                    <td>Hair Ups / Event Styling</td>
+                                    <td>£20</td>
+                                    <td>Trial sessions available</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                    <p class="text-center mt-4 small text-white-50">Prices updated March 2026. Final quote after consultation. Add-ons (toners, treatments) extra.</p>
+                    <p class="text-center mt-4 small text-white-50">Prices updated March 2026. Final quote after
+                        consultation. Add-ons (toners, treatments) extra.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Pricing section -->
-    <section id="pricing" class="pricing py-5">
-        <div class="container">
-            <div class="section-title text-center mb-5" data-aos="fade-up">
-                <h2>Service Pricing</h2>
-                <p>Pricing for our premium services</p>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-6 col-xl-5" data-aos="fade-up">
-                    <div class="pricing-card text-center">
-                        <h4>Our Services</h4>
-                        <ul class="pricing-features list-unstyled mt-4">
-                            <li class="mb-3"><strong>Wash / Blow Dry</strong> — £25</li>
-                            <li class="mb-3"><strong>Hair Dye / Colouring</strong> — £35</li>
-                            <li class="mb-3"><strong>Styling</strong> — £15</li>
-                            <li class="mb-3"><strong>Hair Ups</strong> — £20</li>
-                        </ul>
-                        <a href="#appointment" class="btn btn-outline-custom mt-4">Book Now</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Appointment Section with Square Widget -->
+    <!-- Appointment Section -->
     <section id="appointment" class="appointment py-5">
         <div class="container">
             <div class="section-title text-center mb-5" data-aos="fade-up">
@@ -204,35 +314,31 @@
             </div>
 
             <div class="row g-5">
-                <!-- Contact Information Column -->
+                <!-- Contact Info -->
                 <div class="col-lg-5 col-xl-4" data-aos="fade-right">
-                    <div class="contact-info bg-charcoal p-4 p-lg-5 rounded shadow border border-gold border-opacity-25 h-100">
+                    <div
+                        class="contact-info bg-charcoal p-4 p-lg-5 rounded shadow border border-gold border-opacity-25 h-100">
                         <h3 class="mb-5 text-gold text-center text-lg-start">Contact Information</h3>
-
                         <div class="contact-item mb-4">
                             <div class="d-flex align-items-start">
                                 <i class="fas fa-phone-alt fa-2x text-gold me-4 mt-1"></i>
                                 <div>
                                     <h5 class="mb-2 text-gold">Phone</h5>
-                                    <p class="mb-0 fs-5">
-                                        <a href="tel:+447927799217" class="text-white text-decoration-none">07927 799217</a>
-                                    </p>
+                                    <p class="mb-0 fs-5"><a href="tel:+447927799217"
+                                            class="text-white text-decoration-none">07927 799217</a></p>
                                 </div>
                             </div>
                         </div>
-
                         <div class="contact-item mb-5">
                             <div class="d-flex align-items-start">
                                 <i class="fas fa-envelope fa-2x text-gold me-4 mt-1"></i>
                                 <div>
                                     <h5 class="mb-2 text-gold">Email</h5>
-                                    <p class="mb-0">
-                                        <a href="mailto:hairby.beaux@gmail.com" class="text-white text-decoration-none">hairby.beaux@gmail.com</a>
-                                    </p>
+                                    <p class="mb-0"><a href="mailto:hairby.beaux@gmail.com"
+                                            class="text-white text-decoration-none">hairby.beaux@gmail.com</a></p>
                                 </div>
                             </div>
                         </div>
-
                         <div class="contact-item">
                             <div class="d-flex align-items-start">
                                 <i class="fas fa-clock fa-2x text-gold me-4 mt-1"></i>
@@ -250,19 +356,54 @@
                     </div>
                 </div>
 
-                <!-- Square Booking Widget Column -->
+                <!-- Booking + Calendar Grid -->
                 <div class="col-lg-7" data-aos="fade-left">
-                    <div class="appointment-form bg-charcoal p-4 p-lg-5 rounded shadow-lg border border-gold border-opacity-25 text-center">
-                        <h3 class="text-gold mb-4">Select Date & Time</h3>
-                        <p class="text-white-75 mb-5">Choose your preferred service and time below</p>
+                    <div
+                        class="appointment-form bg-charcoal p-4 p-lg-5 rounded shadow-lg border border-gold border-opacity-25 text-center">
+                        <h3 class="text-gold mb-4">Book Your Appointment</h3>
+                        <p class="text-white-75 mb-4">Select your service, then pick a date and time</p>
 
-                        <!-- Square Appointments Widget Embed -->
-                        <!-- Start Square Appointments Embed Code -->
-                        <script src='https://square.site/appointments/buyer/widget/jpvj3s5yos58ct/LEMK7PBKXHJ92.js'></script>
-                        <!-- End Square Appointments Embed Code -->
+                        <!-- Service Buttons -->
+                        <div class="d-flex flex-column gap-3 mb-5" id="service-buttons">
+                            <button type="button" class="btn btn-outline-custom service-btn"
+                                data-service="Wash / Blow Dry" data-price="25"
+                                data-link="https://buy.stripe.com/dRmcN7eocfxI3vE1Mh0kE00">
+                                Wash / Blow Dry – £25
+                            </button>
+                            <button type="button" class="btn btn-outline-custom service-btn"
+                                data-service="Hair Dye / Colouring" data-price="35"
+                                data-link="https://buy.stripe.com/28EdRbfsg3P0d6egHb0kE02">
+                                Hair Dye / Colouring – £35
+                            </button>
+                            <button type="button" class="btn btn-outline-custom service-btn" data-service="Styling"
+                                data-price="15" data-link="https://buy.stripe.com/7sY7sN5RG5X81nwgHb0kE01">
+                                Styling – £15
+                            </button>
+                            <button type="button" class="btn btn-outline-custom service-btn" data-service="Hair Ups"
+                                data-price="20" data-link="https://buy.stripe.com/3cIaEZbc0fxI9U23Up0kE03">
+                                Hair Ups – £20
+                            </button>
+                        </div>
 
-                        <p class="text-center text-white-50 small mt-4">
-                            
+                        <!-- Calendar + Times (hidden until service selected) -->
+                        <div id="calendar-container" class="d-none mt-5">
+                            <h5 class="text-gold mb-4">Select Date</h5>
+                            <div class="calendar-scroll d-flex gap-3 mb-5 pb-3" id="calendar">
+                                <!-- Days generated by JS -->
+                            </div>
+
+                            <h5 class="text-gold mb-4" id="time-title" style="display:none;">Select Time</h5>
+                            <div class="d-flex flex-wrap gap-3 justify-content-center" id="times">
+                                <!-- Times generated by JS -->
+                            </div>
+
+                            <button id="confirm-booking" class="btn btn-primary-custom w-100 mt-5 d-none">
+                                Proceed to Secure Payment
+                            </button>
+                        </div>
+
+                        <p class="text-white-50 small mt-5">
+                            Secure payment via Stripe • Booking confirmed after payment
                         </p>
                     </div>
                 </div>
@@ -273,7 +414,9 @@
     <!-- Footer -->
     <footer class="bg-charcoal py-5 text-center text-white-75">
         <div class="container">
-            <p>© 2026 Hair By Beau. All rights reserved.</p>
+            <p>©
+                <script>document.write(new Date().getFullYear());</script> Hair By Beau. All rights reserved.
+            </p>
         </div>
     </footer>
 
@@ -282,11 +425,136 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
     <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 800,
-            once: true
+        AOS.init({ duration: 800, once: true });
+
+        function checkAdminAccess() {
+            const correctCode = "beauissmelly123!!xx";
+            const entered = prompt("Team access code required:");
+            if (entered === correctCode) {
+                window.open("https://squareup.com/dashboard/appointments", "_blank", "noopener,noreferrer");
+            } else if (entered !== null) {
+                alert("Incorrect code. Access denied.");
+            }
+        }
+
+        // ──────────────────────────────────────────────────────────────────────────────
+        // CALENDAR & TIME SLOT SELECTION (pink & gold theme)
+        // ──────────────────────────────────────────────────────────────────────────────
+        let selectedService = null;
+        let selectedLink = null;
+        let selectedDate = null;
+        let selectedTime = null;
+
+        // Corrected & realistic opening hours (last slot finishes by closing time)
+        const openingHours = {
+            2: ["12:00", "13:00", "14:00", "15:00"],     // Tuesday 12–16 → last start 15:00
+            3: ["10:00", "11:00", "12:00", "13:00", "14:00"],  // Wednesday 10–15 → last start 14:00
+            4: ["10:00", "11:00", "12:00", "13:00", "14:00"]   // Thursday 10–15 → last start 14:00
+        };
+
+        function generateCalendar() {
+            const container = document.getElementById("calendar");
+            container.innerHTML = "";
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < 21; i++) {
+                const d = new Date();
+                d.setDate(today.getDate() + i);
+                const iso = d.toISOString().split("T")[0];
+                const dayOfWeek = d.getDay();
+
+                const dayEl = document.createElement("div");
+                dayEl.className = "day-card";
+                dayEl.innerHTML = `
+            <div class="weekday">${d.toLocaleDateString('en-GB', { weekday: 'short' })}</div>
+            <div class="date">${d.getDate()}</div>
+            <div class="month">${d.toLocaleDateString('en-GB', { month: 'short' })}</div>
+        `;
+
+                // Disable past days or days with no opening hours
+                if (d < today || !openingHours[dayOfWeek]) {
+                    dayEl.classList.add("disabled");
+                } else {
+                    dayEl.onclick = () => {
+                        document.querySelectorAll(".day-card").forEach(el => el.classList.remove("selected"));
+                        dayEl.classList.add("selected");
+                        selectedDate = iso;
+                        loadTimeSlots(dayOfWeek);
+                    };
+                }
+
+                container.appendChild(dayEl);
+            }
+        }
+
+        function loadTimeSlots(dayOfWeek) {
+            const container = document.getElementById("times");
+            const title = document.getElementById("time-title");
+            container.innerHTML = "";
+            selectedTime = null;
+            document.getElementById("confirm-booking").classList.add("d-none");
+
+            title.style.display = "block";
+
+            const times = openingHours[dayOfWeek] || [];
+
+            times.forEach(t => {
+                const el = document.createElement("div");
+                el.className = "time-slot";
+                el.textContent = t;
+
+                // All slots are selectable (no random disabling)
+                el.onclick = () => {
+                    document.querySelectorAll(".time-slot").forEach(e => e.classList.remove("selected"));
+                    el.classList.add("selected");
+                    selectedTime = t;
+                    document.getElementById("confirm-booking").classList.remove("d-none");
+                };
+
+                container.appendChild(el);
+            });
+        }
+
+        // Service selection → show calendar
+        document.querySelectorAll(".service-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                document.querySelectorAll(".service-btn").forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+
+                selectedService = this.dataset.service;
+                selectedLink = this.dataset.link;
+
+                document.getElementById("calendar-container").classList.remove("d-none");
+                document.getElementById("confirm-booking").classList.add("d-none");
+
+                // Reset
+                selectedDate = null;
+                selectedTime = null;
+                document.querySelectorAll(".day-card, .time-slot").forEach(el => el.classList.remove("selected"));
+                document.getElementById("time-title").style.display = "none";
+
+                generateCalendar();
+                document.getElementById("calendar-container").scrollIntoView({ behavior: "smooth" });
+            });
         });
+
+        // Proceed to Stripe payment
+        document.getElementById("confirm-booking")?.addEventListener("click", function () {
+            if (!selectedLink || !selectedDate || !selectedTime) {
+                alert("Please select date and time.");
+                return;
+            }
+
+            const dateTimeStr = `${selectedDate} at ${selectedTime}`;
+            if (confirm(`Confirm ${selectedService} on ${dateTimeStr}?\nProceed to payment?`)) {
+                window.location.href = selectedLink;
+            }
+        });
+
+        // Generate calendar on page load (but hidden until service selected)
+        // We call generateCalendar() only when needed now
     </script>
 </body>
+
 </html>
