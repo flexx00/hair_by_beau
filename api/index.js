@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const twilio = require("twilio");
 const Stripe = require("stripe");
+require('dotenv').config(); // Load .env for local testing
 
 const app = express();
 app.use(cors());
@@ -10,17 +11,23 @@ app.use(cors());
 app.use("/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 
-// Serve static files (index.html, success.html, images, etc.)
-app.use(express.static(__dirname));
+// Serve static files (optional — if you host frontend here too)
+// app.use(express.static(__dirname + "/../public"));
 
-// 🔐 Credentials
-const accountSid = "AC4598af68d81c78de170b6529d318eda7";
-const authToken = "70c7dccf1c735625972d54ce24c4d939";
-const stripe = Stripe("sk_test_51TBKY3QtbyUXSAuNXQEUpjGHVw4qyJxhADuJ8I4LSlqdBUExEYZuGrbBL8HEGSPLF9kGSQgDBMgYwizDm5FQcikt00fyJ0pB1u");
-const endpointSecret = "whsec_yxROhgBYj4VMGUGyQl8R899bZIQTv5Dz";
+// 🔐 Credentials from Environment Variables (SECURE!)
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 
+if (!accountSid || !authToken || !stripeSecret || !endpointSecret || !twilioNumber) {
+    console.error("❌ Missing required environment variables!");
+    throw new Error("Missing env vars");
+}
+
+const stripe = Stripe(stripeSecret);
 const client = twilio(accountSid, authToken);
-const twilioNumber = "+447460963690";   // Your Twilio SMS-enabled number
 
 // 💰 Price helper
 function getPrice(service) {
@@ -47,7 +54,7 @@ async function sendSMS({ phone, name, service, date, time }) {
 
     console.log(`📩 Sending SMS to: ${cleanPhone} | Name: ${name}`);
 
-    const messageBody = `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}.`;
+    const messageBody = `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}. See you soon! - Hair By Beau`;
 
     try {
         const message = await client.messages.create({
@@ -71,6 +78,9 @@ app.post("/create-checkout-session", async (req, res) => {
 
     console.log("🧾 Creating checkout session for:", { name, phone, service, date, time });
 
+    // Get domain from env var or fallback
+    const DOMAIN = process.env.DOMAIN_URL || "https://your-project-name.vercel.app";
+
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
@@ -83,8 +93,8 @@ app.post("/create-checkout-session", async (req, res) => {
                 },
                 quantity: 1,
             }],
-            success_url: `https://stomachically-peppiest-alyssa.ngrok-free.dev/success.html?booking=${encodeURIComponent(JSON.stringify({ name, phone, service, date, time }))}`,
-            cancel_url: "https://stomachically-peppiest-alyssa.ngrok-free.dev",
+            success_url: `${DOMAIN}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${DOMAIN}/index.html`,
             metadata: { name, phone, service, date, time },   // For webhook
         });
 
@@ -126,7 +136,7 @@ app.post("/webhook", async (req, res) => {
     res.json({ received: true });
 });
 
-// 🧪 Manual test route
+// 🧪 Manual test route (optional)
 app.post("/send-sms", async (req, res) => {
     try {
         await sendSMS(req.body);
@@ -137,8 +147,8 @@ app.post("/send-sms", async (req, res) => {
     }
 });
 
-// Start server
-app.listen(3000, () => {
-    console.log("🚀 Server running on http://localhost:3000");
-    console.log(`Twilio From: ${twilioNumber}`);
-});
+// ❌ REMOVE THIS LINE FOR VERCEL:
+// app.listen(3000, () => { ... });
+
+// ✅ EXPORT APP FOR VERCEL SERVERLESS FUNCTION
+module.exports = app;
