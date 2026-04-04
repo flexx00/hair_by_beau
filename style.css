@@ -17,6 +17,16 @@
     --accent-pink: #e89eb8;
     --accent-rose: #b76e79;
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+    --gradient: linear-gradient(135deg, var(--gold), var(--rose-gold));
+
+    --section-gradient: linear-gradient(180deg,
+            var(--dark-bg),
+            var(--charcoal));
+=======
+>>>>>>> Stashed changes
     --gradient: linear-gradient(135deg,var(--gold),var(--rose-gold));
 
     --section-gradient: linear-gradient(
@@ -24,6 +34,10 @@
         var(--dark-bg),
         var(--charcoal)
     );
+<<<<<<< Updated upstream
+=======
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 
     --transition: all 0.35s ease;
 }
@@ -37,6 +51,7 @@
     box-sizing:border-box;
 }
 
+<<<<<<< Updated upstream
 body{
     font-family:'Poppins',sans-serif;
     background:var(--dark-bg);
@@ -46,15 +61,51 @@ body{
     padding-top:70px;
 }
 
+=======
+<<<<<<< HEAD
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--dark-bg);
+    color: var(--white);
+    line-height: 1.7;
+    overflow-x: hidden;
+    padding-top: 70px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    color: var(--accent-gold);
+=======
+body{
+    font-family:'Poppins',sans-serif;
+    background:var(--dark-bg);
+    color:var(--white);
+    line-height:1.7;
+    overflow-x:hidden;
+    padding-top:70px;
+}
+
+>>>>>>> Stashed changes
 h1,h2,h3,h4,h5,h6{
     font-family:'Playfair Display',serif;
     font-weight:600;
     color:var(--accent-gold);
+<<<<<<< Updated upstream
+=======
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
 
 /* ============================================
    NAVBAR
 ============================================ */
+<<<<<<< Updated upstream
 .navbar{
     background:rgba(42,31,36,0.95);
     backdrop-filter:blur(12px);
@@ -80,6 +131,63 @@ h1,h2,h3,h4,h5,h6{
     position:relative;
 }
 
+=======
+<<<<<<< HEAD
+.navbar {
+    background: rgba(42, 31, 36, 0.95);
+    backdrop-filter: blur(12px);
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(244, 208, 140, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--accent-gold);
+    letter-spacing: 1px;
+=======
+.navbar{
+    background:rgba(42,31,36,0.95);
+    backdrop-filter:blur(12px);
+    padding:1rem 0;
+    border-bottom:1px solid rgba(244,208,140,0.15);
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.navbar-brand{
+    font-family:'Playfair Display',serif;
+    font-weight:700;
+    font-size:2rem;
+    color:var(--accent-gold);
+    letter-spacing:1px;
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+}
+
+.navbar-nav .nav-link{
+    color:var(--silver);
+    font-weight:500;
+    margin:0 1rem;
+    position:relative;
+}
+
+<<<<<<< HEAD
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -6px;
+    left: 0;
+    background: var(--accent-gold);
+    transition: var(--transition);
+=======
+>>>>>>> Stashed changes
 .navbar-nav .nav-link::after{
     content:'';
     position:absolute;
@@ -89,6 +197,10 @@ h1,h2,h3,h4,h5,h6{
     left:0;
     background:var(--accent-gold);
     transition:var(--transition);
+<<<<<<< Updated upstream
+=======
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
 
 .navbar-nav .nav-link:hover,
@@ -96,13 +208,24 @@ h1,h2,h3,h4,h5,h6{
     color:var(--accent-gold);
 }
 
+<<<<<<< Updated upstream
 .navbar-nav .nav-link:hover::after{
     width:100%;
+=======
+<<<<<<< HEAD
+.navbar-nav .nav-link:hover::after {
+    width: 100%;
+=======
+.navbar-nav .nav-link:hover::after{
+    width:100%;
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
 
 /* ============================================
    HERO
 ============================================ */
+<<<<<<< Updated upstream
 .hero{
     height:100vh;
     min-height:720px;
@@ -140,16 +263,118 @@ from{ text-shadow:0 0 15px rgba(232,192,124,0.5); }
 to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
 }
 
+=======
+<<<<<<< HEAD
+.hero {
+    height: 100vh;
+    min-height: 720px;
+    background:
+        linear-gradient(rgba(42, 31, 36, 0.75),
+            rgba(42, 31, 36, 0.85)),
+        url('images/hero bg.avif') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content {
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: clamp(3.5rem, 9vw, 6rem);
+    margin-bottom: 1.5rem;
+
+    background: linear-gradient(90deg,
+            var(--gold),
+            var(--rose-gold),
+            var(--accent-gold));
+
+    -webkit-background-clip: text;
+    color: transparent;
+
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 15px rgba(232, 192, 124, 0.5);
+    }
+
+    to {
+        text-shadow: 0 0 35px rgba(232, 192, 124, 0.8);
+    }
+}
+
+.hero p {
+    max-width: 600px;
+    margin: auto;
+    margin-bottom: 40px;
+    color: var(--silver);
+=======
+.hero{
+    height:100vh;
+    min-height:720px;
+    background:
+    linear-gradient(
+    rgba(42,31,36,0.75),
+    rgba(42,31,36,0.85)),
+    url('images/hero bg.avif') center/cover no-repeat;
+    display:flex;
+    align-items:center;
+}
+
+.hero-content{
+    text-align:center;
+}
+
+.hero h1{
+    font-size:clamp(3.5rem,9vw,6rem);
+    margin-bottom:1.5rem;
+
+    background:linear-gradient(
+    90deg,
+    var(--gold),
+    var(--rose-gold),
+    var(--accent-gold));
+
+    -webkit-background-clip:text;
+    color:transparent;
+
+    animation:glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow{
+from{ text-shadow:0 0 15px rgba(232,192,124,0.5); }
+to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
+}
+
+>>>>>>> Stashed changes
 .hero p{
     max-width:600px;
     margin:auto;
     margin-bottom:40px;
     color:var(--silver);
+<<<<<<< Updated upstream
+=======
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+}
+
+.gallery-img {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.gallery-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+>>>>>>> Stashed changes
 }
 
 /* ============================================
    BUTTONS
 ============================================ */
+<<<<<<< Updated upstream
 .btn-primary-custom{
     background:var(--gradient);
     border:none;
@@ -182,6 +407,75 @@ to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
 .btn-outline-custom:hover{
     background:var(--gold);
     color:#1e1e1e;
+=======
+<<<<<<< HEAD
+.btn-primary-custom {
+    background: var(--gradient);
+    border: none;
+    color: #1e1e1e;
+    padding: 14px 36px;
+    border-radius: 50px;
+    font-weight: 600;
+    letter-spacing: 1px;
+
+    box-shadow: 0 8px 24px rgba(232, 192, 124, 0.35);
+
+    transition: var(--transition);
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(232, 192, 124, 0.6);
+}
+
+.btn-outline-custom {
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    background: transparent;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-outline-custom:hover {
+    background: var(--gold);
+    color: #1e1e1e;
+=======
+.btn-primary-custom{
+    background:var(--gradient);
+    border:none;
+    color:#1e1e1e;
+    padding:14px 36px;
+    border-radius:50px;
+    font-weight:600;
+    letter-spacing:1px;
+
+    box-shadow:0 8px 24px rgba(232,192,124,0.35);
+
+    transition:var(--transition);
+}
+
+.btn-primary-custom:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 34px rgba(232,192,124,0.6);
+}
+
+.btn-outline-custom{
+    border:2px solid var(--gold);
+    color:var(--gold);
+    background:transparent;
+    padding:12px 28px;
+    border-radius:50px;
+    font-weight:600;
+    transition:var(--transition);
+}
+
+.btn-outline-custom:hover{
+    background:var(--gold);
+    color:#1e1e1e;
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
 
 /* ============================================
@@ -191,6 +485,7 @@ to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
     text-align:center;
 }
 
+<<<<<<< Updated upstream
 .section-title h2{
     font-size:2.8rem;
     margin-bottom:1.3rem;
@@ -198,6 +493,33 @@ to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
     display:inline-block;
 }
 
+=======
+<<<<<<< HEAD
+.section-title h2 {
+    font-size: 2.8rem;
+    margin-bottom: 1.3rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title h2::after {
+    content: '';
+    width: 70px;
+    height: 3px;
+    background: var(--accent-gold);
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+=======
+.section-title h2{
+    font-size:2.8rem;
+    margin-bottom:1.3rem;
+    position:relative;
+    display:inline-block;
+}
+
+>>>>>>> Stashed changes
 .section-title h2::after{
     content:'';
     width:70px;
@@ -207,11 +529,16 @@ to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
     bottom:-10px;
     left:50%;
     transform:translateX(-50%);
+<<<<<<< Updated upstream
+=======
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
 
 /* ============================================
    ABOUT
 ============================================ */
+<<<<<<< Updated upstream
 .about{
     padding:6rem 0;
     background:linear-gradient(
@@ -227,17 +554,61 @@ to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
     transition:transform .5s;
 }
 
+=======
+<<<<<<< HEAD
+.about {
+    padding: 6rem 0;
+    background: linear-gradient(180deg,
+            var(--dark-bg),
+            var(--charcoal));
+}
+
+.about-image img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform .5s;
+}
+
+.about-image:hover img {
+    transform: scale(1.05);
+}
+
+.about-content p {
+    opacity: .9;
+=======
+.about{
+    padding:6rem 0;
+    background:linear-gradient(
+    180deg,
+    var(--dark-bg),
+    var(--charcoal));
+}
+
+.about-image img{
+    width:100%;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    transition:transform .5s;
+}
+
+>>>>>>> Stashed changes
 .about-image:hover img{
     transform:scale(1.05);
 }
 
 .about-content p{
     opacity:.9;
+<<<<<<< Updated upstream
+=======
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
 
 /* ============================================
    SERVICES
 ============================================ */
+<<<<<<< Updated upstream
 .service-card{
     background:var(--charcoal);
     border-radius:14px;
@@ -270,17 +641,96 @@ to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
     transform:scale(1.05);
 }
 
+=======
+<<<<<<< HEAD
+.service-card {
+    background: var(--charcoal);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    transition: var(--transition);
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 42px rgba(232, 192, 124, 0.25);
+}
+
+.service-image {
+    width: 100%;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+}
+
+.service-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .7s;
+}
+
+.service-card:hover img {
+    transform: scale(1.05);
+}
+
+.service-overlay h3 {
+    font-size: 1.7rem;
+}
+
+.service-overlay p {
+    opacity: .9;
+=======
+.service-card{
+    background:var(--charcoal);
+    border-radius:14px;
+    overflow:hidden;
+    margin-bottom:2rem;
+
+    box-shadow:0 10px 28px rgba(0,0,0,0.45);
+    transition:var(--transition);
+}
+
+.service-card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 20px 42px rgba(232,192,124,0.25);
+}
+
+.service-image{
+    width:100%;
+    aspect-ratio:3/4;
+    overflow:hidden;
+}
+
+.service-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:transform .7s;
+}
+
+.service-card:hover img{
+    transform:scale(1.05);
+}
+
+>>>>>>> Stashed changes
 .service-overlay h3{
     font-size:1.7rem;
 }
 
 .service-overlay p{
     opacity:.9;
+<<<<<<< Updated upstream
+=======
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
 
 /* ============================================
    PRICING
 ============================================ */
+<<<<<<< Updated upstream
 .pricing{
     padding:6rem 0;
 
@@ -324,16 +774,113 @@ to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
     var(--accent-pink));
 }
 
+=======
+<<<<<<< HEAD
+.pricing {
+    padding: 6rem 0;
+
+    background: linear-gradient(180deg,
+            var(--charcoal),
+            var(--deep-gray));
+}
+
+.pricing-card {
+    background: linear-gradient(145deg,
+            #3a2c34,
+            #2f242a);
+
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+
+    border: 1px solid rgba(244, 208, 140, 0.15);
+
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55);
+
+    transition: var(--transition);
+}
+
+.pricing-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 22px 48px rgba(232, 192, 124, 0.35);
+}
+
+.pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 5px;
+    width: 100%;
+    background: linear-gradient(to right,
+            var(--accent-gold),
+            var(--accent-pink));
+}
+
+.price {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    margin: 1.5rem 0;
+=======
+.pricing{
+    padding:6rem 0;
+
+    background:linear-gradient(
+    180deg,
+    var(--charcoal),
+    var(--deep-gray));
+}
+
+.pricing-card{
+    background:linear-gradient(
+    145deg,
+    #3a2c34,
+    #2f242a);
+
+    border-radius:16px;
+    padding:2.5rem 2rem;
+
+    border:1px solid rgba(244,208,140,0.15);
+
+    box-shadow:0 14px 32px rgba(0,0,0,0.55);
+
+    transition:var(--transition);
+}
+
+.pricing-card:hover{
+    transform:translateY(-12px);
+    box-shadow:0 22px 48px rgba(232,192,124,0.35);
+}
+
+.pricing-card::before{
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    height:5px;
+    width:100%;
+    background:linear-gradient(
+    to right,
+    var(--accent-gold),
+    var(--accent-pink));
+}
+
+>>>>>>> Stashed changes
 .price{
     font-size:3rem;
     font-weight:700;
     color:var(--accent-gold);
     margin:1.5rem 0;
+<<<<<<< Updated upstream
+=======
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
 
 /* ============================================
    APPOINTMENT
 ============================================ */
+<<<<<<< Updated upstream
 .appointment{
     padding:6rem 0;
 
@@ -350,10 +897,45 @@ to{ text-shadow:0 0 35px rgba(232,192,124,0.8); }
     border-radius:12px;
 }
 
+=======
+<<<<<<< HEAD
+.appointment {
+    padding: 6rem 0;
+
+    background: linear-gradient(180deg,
+            var(--deep-gray),
+            var(--dark-bg));
+}
+
+.appointment-form,
+.contact-info {
+    background: var(--charcoal);
+    border: 1px solid rgba(244, 208, 140, 0.2);
+    border-radius: 12px;
+=======
+.appointment{
+    padding:6rem 0;
+
+    background:linear-gradient(
+    180deg,
+    var(--deep-gray),
+    var(--dark-bg));
+}
+
+.appointment-form,
+.contact-info{
+    background:var(--charcoal);
+    border:1px solid rgba(244,208,140,0.2);
+    border-radius:12px;
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+}
+
+>>>>>>> Stashed changes
 /* ============================================
    FORM STYLES
 ============================================ */
 .form-control,
+<<<<<<< Updated upstream
 .form-select{
     background:#3a2c34;
     border:1px solid var(--light-gray);
@@ -437,4 +1019,188 @@ font-size:2.2rem;
 font-size:2.5rem;
 }
 
+=======
+<<<<<<< HEAD
+.form-select {
+    background: #3a2c34;
+    border: 1px solid var(--light-gray);
+    color: var(--white);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 .25rem rgba(244, 208, 140, .3);
+}
+
+.form-control::placeholder {
+    color: rgba(240, 232, 237, .6);
+}
+
+/* ============================================
+   ALERT
+============================================ */
+.alert-info {
+    background: rgba(244, 208, 140, .12);
+    border-color: rgba(244, 208, 140, .3);
+    color: var(--white);
+}
+
+.time-slot.booked {
+    background: #b3003c;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.day-card.disabled[title="Fully booked"] {
+    background: #800000 !important;
+    color: #fff !important;
+    border-color: #ff0000 !important;
+}
+
+/* ============================================
+   STRIPE
+============================================ */
+
+.service-btn.active {
+    background-color: #d4af37 !important;
+    /* gold */
+    color: #111 !important;
+    border-color: #d4af37 !important;
+}
+
+.flatpickr-calendar {
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.flatpickr-time {
+    background: #222;
+    color: white;
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media(max-width:992px) {
+
+    .pricing-card {
+        padding: 2rem 1.5rem;
+    }
+
+}
+
+@media(max-width:768px) {
+
+    .hero h1 {
+        font-size: 3.4rem;
+    }
+
+    .pricing {
+        padding: 4rem 0;
+    }
+
+}
+
+@media(max-width:576px) {
+
+    .navbar-brand {
+        font-size: 1.7rem;
+    }
+
+    .section-title h2 {
+        font-size: 2.2rem;
+    }
+
+    .price {
+        font-size: 2.5rem;
+    }
+
+=======
+.form-select{
+    background:#3a2c34;
+    border:1px solid var(--light-gray);
+    color:var(--white);
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:var(--accent-gold);
+    box-shadow:0 0 0 .25rem rgba(244,208,140,.3);
+}
+
+.form-control::placeholder{
+    color:rgba(240,232,237,.6);
+}
+
+/* ============================================
+   ALERT
+============================================ */
+.alert-info{
+    background:rgba(244,208,140,.12);
+    border-color:rgba(244,208,140,.3);
+    color:var(--white);
+}
+
+
+/* ============================================
+   STRIPE
+============================================ */
+
+.service-btn.active {
+    background-color: #d4af37 !important;  /* gold */
+    color: #111 !important;
+    border-color: #d4af37 !important;
+}
+
+.flatpickr-calendar {
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.flatpickr-time {
+    background: #222;
+    color: white;
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media(max-width:992px){
+
+.pricing-card{
+padding:2rem 1.5rem;
+}
+
+}
+
+@media(max-width:768px){
+
+.hero h1{
+font-size:3.4rem;
+}
+
+.pricing{
+padding:4rem 0;
+}
+
+}
+
+@media(max-width:576px){
+
+.navbar-brand{
+font-size:1.7rem;
+}
+
+.section-title h2{
+font-size:2.2rem;
+}
+
+.price{
+font-size:2.5rem;
+}
+
+>>>>>>> 294c2ca8c54c93a70593d7b4e14ebbd9fe716ab1
+>>>>>>> Stashed changes
 }
