@@ -172,7 +172,7 @@ app.post("/test-booking", (req, res) => {
     const test = {
         id: Date.now(),
         name: "Test User",
-        phone: "+447000000000",
+        phone: "+447932355630",
         service: "Wash / Blow Dry",
         date: "2026-04-10",
         time: "12:00",
