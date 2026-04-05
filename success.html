@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Confirmed</title>
+
     <style>
         body {
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
@@ -31,15 +32,8 @@
         }
 
         @keyframes bounce {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         h1 {
@@ -101,7 +95,6 @@
             border-radius: 50px;
             cursor: pointer;
             margin-top: 20px;
-            transition: transform 0.2s;
         }
 
         button:hover {
@@ -117,17 +110,11 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-left: 10px;
-            vertical-align: middle;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -145,87 +132,48 @@
     </div>
 
     <script>
-        // Get booking ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const bookingId = urlParams.get("booking_id");
+        async function loadBooking() {
+            const params = new URLSearchParams(window.location.search);
+            const sessionId = params.get("session_id");
 
-        const statusDiv = document.getElementById('smsStatus');
-
-        // Function to display booking details
-        function displayBookingDetails(booking) {
+            const statusDiv = document.getElementById('smsStatus');
             const detailsDiv = document.getElementById('bookingDetails');
 
-            detailsDiv.innerHTML = `
-            <p><strong>📅 Date:</strong> <span>${booking.date || 'N/A'}</span></p>
-            <p><strong>⏰ Time:</strong> <span>${booking.time || 'N/A'}</span></p>
-            <p><strong>👤 Name:</strong> <span>${booking.name || 'N/A'}</span></p>
-            <p><strong>📞 Phone:</strong> <span>${booking.phone || 'N/A'}</span></p>
-            <p><strong>💇 Service:</strong> <span>${booking.service || 'N/A'}</span></p>
-            ${booking.amount ? `<p><strong>💰 Amount:</strong> <span>$${booking.amount}</span></p>` : ''}
-        `;
-
-            detailsDiv.style.display = 'block';
-        }
-
-        // Function to send SMS
-        async function sendSMS(booking) {
-            statusDiv.innerHTML = 'Sending confirmation SMS... <div class="loader"></div>';
-            statusDiv.className = 'status';
+            if (!sessionId) {
+                statusDiv.innerHTML = '⚠️ No booking found.';
+                statusDiv.className = 'status error';
+                return;
+            }
 
             try {
-                const response = await fetch('send_sms.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(booking)
-                });
+                statusDiv.innerHTML = 'Loading booking... <span class="loader"></span>';
 
-                const result = await response.json();
+                const res = await fetch(`/session/${sessionId}`);
+                const data = await res.json();
 
-                if (result.success) {
-                    statusDiv.innerHTML = '✅ SMS confirmation sent to your phone!';
-                    statusDiv.className = 'status success';
-                } else {
-                    statusDiv.innerHTML = `⚠️ SMS pending.<br><small>${result.error}</small>`;
-                    statusDiv.className = 'status error';
-                }
-            } catch (error) {
-                console.error('SMS error:', error);
-                statusDiv.innerHTML = '⚠️ SMS failed. Please contact support.';
+                const booking = data.booking;
+
+                detailsDiv.innerHTML = `
+                    <p><strong>📅 Date:</strong> <span>${booking.date}</span></p>
+                    <p><strong>⏰ Time:</strong> <span>${booking.time}</span></p>
+                    <p><strong>👤 Name:</strong> <span>${booking.name}</span></p>
+                    <p><strong>📞 Phone:</strong> <span>${booking.phone}</span></p>
+                    <p><strong>💇 Service:</strong> <span>${booking.service}</span></p>
+                `;
+
+                detailsDiv.style.display = 'block';
+
+                statusDiv.innerHTML = '✅ Booking confirmed! SMS sent.';
+                statusDiv.className = 'status success';
+
+            } catch (err) {
+                console.error(err);
+                statusDiv.innerHTML = '⚠️ Failed to load booking.';
                 statusDiv.className = 'status error';
             }
         }
 
-        // MAIN EXECUTION
-        if (!bookingId) {
-            statusDiv.innerHTML = '⚠️ No booking ID found. Please contact support.';
-            statusDiv.className = 'status error';
-        } else {
-            const bookingRaw = localStorage.getItem("booking_" + bookingId);
-
-            if (!bookingRaw) {
-                statusDiv.innerHTML = '⚠️ Booking not found or expired. Please contact support.';
-                statusDiv.className = 'status error';
-            } else {
-                try {
-                    const booking = JSON.parse(bookingRaw);
-
-                    console.log('Booking loaded:', booking);
-
-                    displayBookingDetails(booking);
-                    sendSMS(booking);
-
-                    // Clean up after success (optional)
-                    localStorage.removeItem("booking_" + bookingId);
-
-                } catch (error) {
-                    console.error('Parse error:', error);
-                    statusDiv.innerHTML = '❌ Error processing booking data.';
-                    statusDiv.className = 'status error';
-                }
-            }
-        }
+        loadBooking();
     </script>
 </body>
 

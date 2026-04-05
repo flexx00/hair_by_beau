@@ -22,7 +22,7 @@ app.use(express.static(__dirname));
 const accountSid = "AC4598af68d81c78de170b6529d318eda7";
 const authToken = "70c7dccf1c735625972d54ce24c4d939";
 const stripe = Stripe("sk_test_51TBKY3QtbyUXSAuNXQEUpjGHVw4qyJxhADuJ8I4LSlqdBUExEYZuGrbBL8HEGSPLF9kGSQgDBMgYwizDm5FQcikt00fyJ0pB1u");
-const endpointSecret = "whsec_yxROhgBYj4VMGUGyQl8R899bZIQTv5Dz";
+const endpointSecret = "whsec_pVUpdXbT0IDspBBe7R4VUDP74JMsFRAE";
 
 const client = twilio(accountSid, authToken);
 const twilioNumber = "+447460963690";
@@ -86,7 +86,7 @@ app.post("/create-checkout-session", async (req, res) => {
             }],
 
             // ✅ LIVE URL (FIXED)
-            success_url: "https://hair-by-beau.onrender.com/success.html",
+            success_url: `https://hair-by-beau.onrender.com/success.html?booking=${encodeURIComponent(JSON.stringify({ name, phone, service, date, time }))}`,
             cancel_url: "https://hair-by-beau.onrender.com",
 
             metadata: { name, phone, service, date, time },
