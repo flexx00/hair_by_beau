@@ -20,13 +20,13 @@ app.use(express.static(__dirname));
 // ================= 🔐 CREDENTIALS =================
 // ⚠️ For production: move these to ENV variables later
 const accountSid = "AC4598af68d81c78de170b6529d318eda7";
-const authToken = "70c7dccf1c735625972d54ce24c4d939";
+const authToken = "81da45b7bb682348024e4f017671c673";
 const stripe = Stripe("sk_test_51TBKY3QtbyUXSAuNXQEUpjGHVw4qyJxhADuJ8I4LSlqdBUExEYZuGrbBL8HEGSPLF9kGSQgDBMgYwizDm5FQcikt00fyJ0pB1u");
 const endpointSecret = "whsec_pVUpdXbT0IDspBBe7R4VUDP74JMsFRAE";
 
 const client = twilio(
     "AC4598af68d81c78de170b6529d318eda7",
-    "70c7dccf1c735625972d54ce24c4d939"
+    "81da45b7bb682348024e4f017671c673"
 );
 const twilioNumber = "+447460963690";
 
