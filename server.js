@@ -136,6 +136,21 @@ app.post("/webhook", (req, res) => {
     res.json({ received: true });
 });
 
+
+app.get("/test-sms", async (req, res) => {
+    try {
+        await client.messages.create({
+            body: "Test SMS from Hair By Beau 💖",
+            from: "+447460963690",
+            to: "+447932355630"
+        });
+
+        res.send("SMS sent!");
+    } catch (err) {
+        res.send("Error: " + err.message);
+    }
+});
+
 // ================= GET BOOKINGS =================
 app.get("/bookings", (req, res) => {
     res.json(bookings);
