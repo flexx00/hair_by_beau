@@ -86,7 +86,7 @@ app.post("/create-checkout-session", async (req, res) => {
             }],
 
             // ✅ LIVE URL (FIXED)
-            success_url: `https://hair-by-beau.onrender.com/success.html?booking=${encodeURIComponent(JSON.stringify({ name, phone, service, date, time }))}`,
+            success_url: `https://hair-by-beau.onrender.com/success.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: "https://hair-by-beau.onrender.com",
 
             metadata: { name, phone, service, date, time },
