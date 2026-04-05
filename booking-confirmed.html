@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        h1 {
+            color: #d4af37;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .booking-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .booking-card p {
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .booking-card strong {
+            color: #d4af37;
+        }
+
+        .status {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .status.success {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .status.error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        button {
+            background: #d4af37;
+            color: #111;
+            border: none;
+            padding: 14px 35px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4af37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>Payment Successful!</h1>
+        <p class="subtitle">Your appointment is confirmed</p>
+
+        <div id="bookingDetails" class="booking-card" style="display:none;"></div>
+        <div id="smsStatus" class="status"></div>
+
+        <button onclick="window.location.href='index.html'">Return to Home</button>
+    </div>
+
+    <script>
+        // Get booking ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookingId = urlParams.get("booking_id");
+
+        const statusDiv = document.getElementById('smsStatus');
+
+        // Function to display booking details
+        function displayBookingDetails(booking) {
+            const detailsDiv = document.getElementById('bookingDetails');
+
+            detailsDiv.innerHTML = `
+            <p><strong>📅 Date:</strong> <span>${booking.date || 'N/A'}</span></p>
+            <p><strong>⏰ Time:</strong> <span>${booking.time || 'N/A'}</span></p>
+            <p><strong>👤 Name:</strong> <span>${booking.name || 'N/A'}</span></p>
+            <p><strong>📞 Phone:</strong> <span>${booking.phone || 'N/A'}</span></p>
+            <p><strong>💇 Service:</strong> <span>${booking.service || 'N/A'}</span></p>
+            ${booking.amount ? `<p><strong>💰 Amount:</strong> <span>$${booking.amount}</span></p>` : ''}
+        `;
+
+            detailsDiv.style.display = 'block';
+        }
+
+        // Function to send SMS
+        async function sendSMS(booking) {
+            statusDiv.innerHTML = 'Sending confirmation SMS... <div class="loader"></div>';
+            statusDiv.className = 'status';
+
+            try {
+                const response = await fetch('send_sms.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(booking)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusDiv.innerHTML = '✅ SMS confirmation sent to your phone!';
+                    statusDiv.className = 'status success';
+                } else {
+                    statusDiv.innerHTML = `⚠️ SMS pending.<br><small>${result.error}</small>`;
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                console.error('SMS error:', error);
+                statusDiv.innerHTML = '⚠️ SMS failed. Please contact support.';
+                statusDiv.className = 'status error';
+            }
+        }
+
+        // MAIN EXECUTION
+        if (!bookingId) {
+            statusDiv.innerHTML = '⚠️ No booking ID found. Please contact support.';
+            statusDiv.className = 'status error';
+        } else {
+            const bookingRaw = localStorage.getItem("booking_" + bookingId);
+
+            if (!bookingRaw) {
+                statusDiv.innerHTML = '⚠️ Booking not found or expired. Please contact support.';
+                statusDiv.className = 'status error';
+            } else {
+                try {
+                    const booking = JSON.parse(bookingRaw);
+
+                    console.log('Booking loaded:', booking);
+
+                    displayBookingDetails(booking);
+                    sendSMS(booking);
+
+                    // Clean up after success (optional)
+                    localStorage.removeItem("booking_" + bookingId);
+
+                } catch (error) {
+                    console.error('Parse error:', error);
+                    statusDiv.innerHTML = '❌ Error processing booking data.';
+                    statusDiv.className = 'status error';
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

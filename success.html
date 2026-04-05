@@ -1,48 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Confirmed - Hair By Beau</title>
+    <title>Booking Confirmed</title>
     <style>
-        body {
-            background-color: #111;
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-            padding: 50px 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 10px;
-            border: 1px solid #d4af37;
+        body { 
+            background: #111; 
+            color: white; 
+            text-align: center; 
+            padding: 100px 20px; 
+            font-family: Arial, sans-serif; 
         }
         h1 { color: #d4af37; }
-        p { line-height: 1.6; }
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #d4af37;
-            color: #111;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Payment Successful! 🎉</h1>
-        <p>Thank you for booking with Hair By Beau.</p>
-        <p>Your appointment has been recorded. You will receive an email receipt from Stripe shortly.</p>
-        
-        <p><strong>Note:</strong> If you haven't received a confirmation text within 24 hours, please contact us at <a href="tel:07927 799217" style="color:#d4af37">07927 799217</a>.</p>
-        
-        <a href="index.html" class="btn">Back to Home</a>
-    </div>
+    <h1>Payment Successful! 🎉</h1>
+    <p>Your appointment is confirmed.<br>You will receive a confirmation text shortly.</p>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const bookingRaw = params.get("booking");
+
+        if (bookingRaw) {
+            try {
+                const booking = JSON.parse(decodeURIComponent(bookingRaw));
+                console.log("✅ Booking data loaded:", booking);
+
+                fetch("http://localhost:3000/send-sms", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(booking)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("SMS response:", data);
+                    if (data.success) alert("Confirmation SMS sent ✅");
+                })
+                .catch(err => {
+                    console.error("SMS request failed:", err);
+                    alert("Payment successful, but SMS may have failed. Check console.");
+                });
+            } catch (e) {
+                console.error("Failed to parse booking data");
+                alert("Payment successful, but confirmation failed to process.");
+            }
+        } else {
+            alert("No booking data found ❌");
+        }
+    </script>
 </body>
 </html>
