@@ -10,7 +10,7 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 // ================= MIDDLEWARE =================
-// Stripe webhook MUST come BEFORE express.json()
+// ⚠️ Stripe webhook MUST come BEFORE express.json()
 app.use("/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 
@@ -18,20 +18,20 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 // ================= 🔐 CREDENTIALS =================
-// ⚠️ For production: move these to ENV variables later
-const accountSid = "AC4598af68d81c78de170b6529d318eda7";
-const authToken = "81da45b7bb682348024e4f017671c673";
+// ⚠️ Move to ENV later
 const stripe = Stripe("sk_test_51TBKY3QtbyUXSAuNXQEUpjGHVw4qyJxhADuJ8I4LSlqdBUExEYZuGrbBL8HEGSPLF9kGSQgDBMgYwizDm5FQcikt00fyJ0pB1u");
+
 const endpointSecret = "whsec_pVUpdXbT0IDspBBe7R4VUDP74JMsFRAE";
 
 const client = twilio(
     "AC4598af68d81c78de170b6529d318eda7",
     "81da45b7bb682348024e4f017671c673"
 );
+
 const twilioNumber = "+447460963690";
 
 // ================= STORAGE =================
-// ⚠️ Temporary (resets on restart)
+// ⚠️ TEMP ONLY (resets on restart)
 let bookings = [];
 
 // ================= PRICE =================
@@ -49,7 +49,12 @@ function getPrice(service) {
 async function sendSMS({ phone, name, service, date, time }) {
     try {
         let cleanPhone = String(phone || "").replace(/\s+/g, "");
-        if (!cleanPhone.startsWith("+")) cleanPhone = "+" + cleanPhone;
+
+        if (!cleanPhone.startsWith("+")) {
+            cleanPhone = "+" + cleanPhone;
+        }
+
+        console.log("📩 Sending SMS to:", cleanPhone);
 
         const messageBody =
             `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}.`;
@@ -60,7 +65,8 @@ async function sendSMS({ phone, name, service, date, time }) {
             to: cleanPhone
         });
 
-        console.log("✅ SMS SENT:", cleanPhone);
+        console.log("✅ SMS SENT SUCCESSFULLY");
+
     } catch (err) {
         console.error("❌ SMS ERROR:", err.message);
     }
@@ -88,12 +94,13 @@ app.post("/create-checkout-session", async (req, res) => {
                 quantity: 1,
             }],
 
-            // ✅ LIVE URL (FIXED)
             success_url: `https://hair-by-beau.onrender.com/success.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: "https://hair-by-beau.onrender.com",
 
             metadata: { name, phone, service, date, time },
         });
+
+        console.log("💳 Created Stripe session:", session.id);
 
         res.json({ url: session.url });
 
@@ -103,8 +110,27 @@ app.post("/create-checkout-session", async (req, res) => {
     }
 });
 
+// ================= GET SESSION (FIX SUCCESS PAGE) =================
+app.get("/session/:id", async (req, res) => {
+    try {
+        const session = await stripe.checkout.sessions.retrieve(req.params.id);
+
+        if (!session || !session.metadata) {
+            return res.status(404).json({ error: "Booking not found" });
+        }
+
+        res.json({
+            booking: session.metadata
+        });
+
+    } catch (err) {
+        console.error("❌ Session fetch error:", err.message);
+        res.status(500).json({ error: "Failed to retrieve session" });
+    }
+});
+
 // ================= WEBHOOK =================
-app.post("/webhook", (req, res) => {
+app.post("/webhook", async (req, res) => {
     const sig = req.headers["stripe-signature"];
     let event;
 
@@ -129,34 +155,33 @@ app.post("/webhook", (req, res) => {
 
         bookings.push(newBooking);
 
-        // 🔥 Send SMS async (don’t block webhook)
+        // 🔥 SEND SMS (SAFE)
         sendSMS(booking);
     }
 
     res.json({ received: true });
 });
 
-
+// ================= TEST SMS =================
 app.get("/test-sms", async (req, res) => {
     try {
         await client.messages.create({
             body: "Test SMS from Hair By Beau 💖",
-            from: "+447460963690",
+            from: twilioNumber,
             to: "+447932355630"
         });
 
-        res.send("SMS sent!");
+        res.send("✅ SMS sent!");
     } catch (err) {
-        res.send("Error: " + err.message);
+        res.send("❌ Error: " + err.message);
     }
 });
 
-// ================= GET BOOKINGS =================
+// ================= BOOKINGS =================
 app.get("/bookings", (req, res) => {
     res.json(bookings);
 });
 
-// ================= CANCEL =================
 app.delete("/book/:id", (req, res) => {
     const id = Number(req.params.id);
 
@@ -167,7 +192,7 @@ app.delete("/book/:id", (req, res) => {
     res.json({ success: true });
 });
 
-// ================= TEST ROUTE =================
+// ================= TEST BOOKING =================
 app.post("/test-booking", (req, res) => {
     const test = {
         id: Date.now(),
@@ -184,7 +209,7 @@ app.post("/test-booking", (req, res) => {
     res.json({ success: true, booking: test });
 });
 
-// ================= HEALTH CHECK =================
+// ================= HEALTH =================
 app.get("/health", (req, res) => {
     res.json({ status: "ok" });
 });
