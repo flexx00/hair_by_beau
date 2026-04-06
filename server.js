@@ -39,7 +39,6 @@ function getPrice(service) {
     };
     return prices[service] || 2500;
 }
-
 // ================= PHONE FORMAT =================
 function formatUKNumber(phone) {
     let clean = String(phone || "").replace(/\s+/g, "");
