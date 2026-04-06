@@ -10,11 +10,8 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 // ================= MIDDLEWARE =================
-// ⚠️ Stripe webhook MUST come BEFORE express.json()
 app.use("/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
-
-// Serve frontend
 app.use(express.static(__dirname));
 
 // ================= 🔐 CREDENTIALS =================
@@ -31,7 +28,6 @@ const client = twilio(
 const twilioNumber = "+447460963690";
 
 // ================= STORAGE =================
-// ⚠️ TEMP ONLY (resets on restart)
 let bookings = [];
 
 // ================= PRICE =================
@@ -45,24 +41,32 @@ function getPrice(service) {
     return prices[service] || 2500;
 }
 
+// ================= PHONE FORMAT FIX =================
+function formatUKNumber(phone) {
+    let clean = phone.replace(/\s+/g, "");
+
+    if (clean.startsWith("0")) {
+        clean = "+44" + clean.slice(1);
+    }
+
+    if (!clean.startsWith("+")) {
+        clean = "+" + clean;
+    }
+
+    return clean;
+}
+
 // ================= SMS =================
 async function sendSMS({ phone, name, service, date, time }) {
     try {
-        let cleanPhone = String(phone || "").replace(/\s+/g, "");
+        const formattedPhone = formatUKNumber(phone);
 
-        if (!cleanPhone.startsWith("+")) {
-            cleanPhone = "+" + cleanPhone;
-        }
-
-        console.log("📩 Sending SMS to:", cleanPhone);
-
-        const messageBody =
-            `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}.`;
+        console.log("📩 Sending SMS to:", formattedPhone);
 
         await client.messages.create({
-            body: messageBody,
+            body: `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}.`,
             from: twilioNumber,
-            to: cleanPhone
+            to: formattedPhone
         });
 
         console.log("✅ SMS SENT SUCCESSFULLY");
@@ -84,7 +88,6 @@ app.post("/create-checkout-session", async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
-
             line_items: [{
                 price_data: {
                     currency: "gbp",
@@ -93,14 +96,10 @@ app.post("/create-checkout-session", async (req, res) => {
                 },
                 quantity: 1,
             }],
-
-            success_url: `https://hair-by-beau.onrender.com/success.html?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: "https://hair-by-beau.onrender.com",
-
+            success_url: `${process.env.BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: process.env.BASE_URL,
             metadata: { name, phone, service, date, time },
         });
-
-        console.log("💳 Created Stripe session:", session.id);
 
         res.json({ url: session.url });
 
@@ -110,7 +109,7 @@ app.post("/create-checkout-session", async (req, res) => {
     }
 });
 
-// ================= GET SESSION (FIX SUCCESS PAGE) =================
+// ================= GET SESSION =================
 app.get("/session/:id", async (req, res) => {
     try {
         const session = await stripe.checkout.sessions.retrieve(req.params.id);
@@ -119,9 +118,7 @@ app.get("/session/:id", async (req, res) => {
             return res.status(404).json({ error: "Booking not found" });
         }
 
-        res.json({
-            booking: session.metadata
-        });
+        res.json({ booking: session.metadata });
 
     } catch (err) {
         console.error("❌ Session fetch error:", err.message);
@@ -145,80 +142,16 @@ app.post("/webhook", async (req, res) => {
         const session = event.data.object;
         const booking = session.metadata;
 
-        console.log("💳 PAYMENT SUCCESS:", booking);
-
-        const newBooking = {
+        bookings.push({
             id: Date.now(),
             ...booking,
             status: "active"
-        };
+        });
 
-        bookings.push(newBooking);
-
-        // 🔥 SEND SMS (SAFE)
-        sendSMS(booking);
+        await sendSMS(booking);
     }
 
     res.json({ received: true });
-});
-
-// ================= TEST SMS =================
-app.get("/test-sms", async (req, res) => {
-    try {
-        await client.messages.create({
-            body: "Test SMS from Hair By Beau 💖",
-            from: twilioNumber,
-            to: "+447932355630"
-        });
-
-        res.send("✅ SMS sent!");
-    } catch (err) {
-        res.send("❌ Error: " + err.message);
-    }
-});
-
-// ================= BOOKINGS =================
-app.get("/bookings", (req, res) => {
-    res.json(bookings);
-});
-
-app.delete("/book/:id", (req, res) => {
-    const id = Number(req.params.id);
-
-    bookings = bookings.map(b =>
-        b.id === id ? { ...b, status: "cancelled" } : b
-    );
-
-    res.json({ success: true });
-});
-
-// ================= TEST BOOKING (WITH SMS) =================
-app.post("/test-booking", async (req, res) => {
-    const test = {
-        id: Date.now(),
-        name: "Test User",
-        phone: "+447932355630", // change to your number
-        service: "Wash / Blow Dry",
-        date: "2026-04-10",
-        time: "12:00",
-        status: "active"
-    };
-
-    bookings.push(test);
-
-    try {
-        await sendSMS(test);
-        console.log("✅ Test booking SMS sent");
-    } catch (err) {
-        console.error("❌ Test booking SMS failed:", err.message);
-    }
-
-    res.json({ success: true, booking: test });
-});
-
-// ================= HEALTH =================
-app.get("/health", (req, res) => {
-    res.json({ status: "ok" });
 });
 
 // ================= START =================
