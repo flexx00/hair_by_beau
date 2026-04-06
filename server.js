@@ -39,6 +39,7 @@ function getPrice(service) {
     };
     return prices[service] || 2500;
 }
+
 // ================= PHONE FORMAT =================
 function formatUKNumber(phone) {
     let clean = String(phone || "").replace(/\s+/g, "");
@@ -64,11 +65,10 @@ async function sendSMS({ phone, name, service, date, time }) {
         await client.messages.create({
             body: `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}.`,
             from: twilioNumber,
-            to: formattedPhone
+            to: formattedPhone,
         });
 
         console.log("✅ SMS SENT SUCCESSFULLY");
-
     } catch (err) {
         console.error("❌ SMS ERROR:", err.message);
     }
@@ -86,23 +86,24 @@ app.post("/create-checkout-session", async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
             payment_method_types: ["card"],
-            line_items: [{
-                price_data: {
-                    currency: "gbp",
-                    product_data: { name: service },
-                    unit_amount: getPrice(service),
+            line_items: [
+                {
+                    price_data: {
+                        currency: "gbp",
+                        product_data: { name: service },
+                        unit_amount: getPrice(service),
+                    },
+                    quantity: 1,
                 },
-                quantity: 1,
-            }],
-            success_url: "https://hair-by-beau.onrender.com/success.html?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url: "https://hair-by-beau.onrender.com",
+            ],
+            success_url: `${BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${BASE_URL}`,
             metadata: { name, phone, service, date, time },
         });
 
         console.log("💳 Stripe session created:", session.id);
 
         res.json({ url: session.url });
-
     } catch (err) {
         console.error("❌ Stripe error:", err.message);
         res.status(500).json({ error: err.message });
@@ -119,7 +120,6 @@ app.get("/session/:id", async (req, res) => {
         }
 
         res.json({ booking: session.metadata });
-
     } catch (err) {
         console.error("❌ Session fetch error:", err.message);
         res.status(500).json({ error: "Failed to retrieve session" });
@@ -127,7 +127,7 @@ app.get("/session/:id", async (req, res) => {
 });
 
 // ================= WEBHOOK =================
-app.post("/webhook", async (req, res) => {
+app.post("/webhook", (req, res) => {
     const sig = req.headers["stripe-signature"];
     let event;
 
@@ -147,10 +147,10 @@ app.post("/webhook", async (req, res) => {
         bookings.push({
             id: Date.now(),
             ...booking,
-            status: "active"
+            status: "active",
         });
 
-        await sendSMS(booking);
+        sendSMS(booking);
     }
 
     res.json({ received: true });
