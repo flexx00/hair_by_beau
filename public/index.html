@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair By Beau</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
+
+    <style>
+        :root {
+            --gold: #d4af37;
+            --soft-gold: #e8c670;
+            --pink: #f8c8dc;
+            --deep-pink: #e89ab8;
+            --dark: #111;
+            --charcoal: #1a1a1a;
+            --border-gold: rgba(212, 175, 55, 0.35);
+            --bg-dark: #0f0a0d;
+            --bg-section: #1a1217;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f5f0f2;
+            scroll-behavior: smooth;
+        }
+
+        /* Utilities */
+        .text-gold {
+            color: var(--gold) !important;
+        }
+
+        .bg-charcoal {
+            background-color: var(--charcoal);
+        }
+
+        .card-gold-border {
+            border: 1px solid var(--border-gold);
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(15, 10, 13, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 1rem 0;
+            border-bottom: 2px solid var(--border-gold);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold) !important;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--pink) !important;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 92vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)), url('https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero-content h1 {
+            font-size: 4.2rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--gold), var(--soft-gold));
+            color: #111;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            border: none;
+        }
+
+        .btn-primary-custom:hover {
+            transform: scale(1.05);
+            color: #000;
+        }
+
+        .btn-outline-custom {
+            border: 2px solid var(--pink);
+            color: var(--pink);
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--pink);
+            color: #111;
+        }
+
+        /* Sections */
+        .services,
+        .pricing,
+        .appointment {
+            padding: 5rem 0;
+            background-color: var(--bg-section);
+        }
+
+        .photos {
+            padding: 5rem 0;
+            background-color: var(--bg-dark);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-img:hover {
+            transform: scale(1.03);
+        }
+
+        /* Forms */
+        .appointment-form,
+        .contact-info {
+            background: var(--charcoal);
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .form-control,
+        .form-select {
+            background: #2a1f24;
+            border: 1px solid var(--border-gold);
+            color: #fff;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: #2a1f24;
+            border-color: var(--gold);
+            color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+        }
+
+        /* Admin Dashboard Styles */
+        #admin-dashboard {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .stat-card {
+            background: #1f161a;
+            border: 1px solid var(--border-gold);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .cal-day-header {
+            font-weight: 600;
+            color: var(--pink);
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        .cal-day {
+            background: #2a1f24;
+            padding: 14px 8px;
+            text-align: center;
+            border-radius: 12px;
+            min-height: 60px;
+        }
+
+        .cal-day.has-booking {
+            background: linear-gradient(135deg, var(--pink), #f4a6c8);
+            color: #111;
+            font-weight: 600;
+        }
+
+        .table-dark-custom {
+            background-color: var(--charcoal);
+            color: #fff;
+        }
+
+        .table-dark-custom th {
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold);
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .table-dark-custom td {
+            border-bottom: 1px solid #333;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#navbarSupportedContent" data-bs-offset="70">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Hair By Beau</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link admin-link" href="#" onclick="checkAdminAccess(); return false;">Admin
+                            Panel</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#photos">Photos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#appointment">Book Now</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero mt-5 mt-lg-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="hero-content text-center">
+                        <h1>Transform Your Style</h1>
+                        <p>Hair By Beau offers premium grooming experiences for women.</p>
+                        <div class="hero-buttons d-flex flex-column flex-sm-row justify-content-center gap-3">
+                            <a href="#appointment" class="btn btn-primary-custom">Book Appointment</a>
+                            <a href="#services" class="btn btn-outline-custom">Explore Services</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5 bg-section">
+        <div class="container">
+            <div class="section-title text-center mb-5" data-aos="fade-up">
+                <h2 class="text-gold">About Beau-Lily</h2>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                    <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80"
+                        alt="Stylist" class="img-fluid rounded shadow">
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="ps-lg-4">
+                        <h2 class="text-gold">Where Style Meets Profession</h2>
+                        <p class="mt-3">At Hair By Beau, we believe that everyone deserves to look and feel their best.
+                            Our salon combines modern techniques with timeless style.</p>
+                        <a href="#appointment" class="btn btn-primary-custom mt-3">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Photos Section -->
+    <section id="photos" class="photos py-5">
+        <div class="container">
+            <h2 class="text-center text-gold mb-5" data-aos="fade-up">My Work</h2>
+            <div class="row g-4">
+                <div class="col-md-4"><img src="https://via.placeholder.com/400x500/333/d4af37?text=Style+1"
+                        class="img-fluid rounded gallery-img"></div>
+                <div class="col-md-4"><img src="https://via.placeholder.com/400x500/333/d4af37?text=Style+2"
+                        class="img-fluid rounded gallery-img"></div>
+                <div class="col-md-4"><img src="https://via.placeholder.com/400x500/333/d4af37?text=Style+3"
+                        class="img-fluid rounded gallery-img"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services py-5">
+        <div class="container">
+            <h2 class="text-center text-gold mb-5">Our Signature Services</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card bg-charcoal text-white card-gold-border h-100 text-center p-4">
+                        <i class="fas fa-wind fa-3x text-gold mb-3"></i>
+                        <h4>Wash / Blow Dry</h4>
+                        <p class="price-display text-gold">£25</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card bg-charcoal text-white card-gold-border h-100 text-center p-4">
+                        <i class="fas fa-paint-brush fa-3x text-gold mb-3"></i>
+                        <h4>Hair Dye</h4>
+                        <p class="price-display text-gold">£35</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card bg-charcoal text-white card-gold-border h-100 text-center p-4">
+                        <i class="fas fa-cut fa-3x text-gold mb-3"></i>
+                        <h4>Styling</h4>
+                        <p class="price-display text-gold">£15</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card bg-charcoal text-white card-gold-border h-100 text-center p-4">
+                        <i class="fas fa-crown fa-3x text-gold mb-3"></i>
+                        <h4>Hair Ups</h4>
+                        <p class="price-display text-gold">£20</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing py-5">
+        <div class="container">
+            <h2 class="text-center text-gold mb-5">Pricing</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom text-center">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Wash / Blow Dry</td>
+                                    <td>£25</td>
+                                </tr>
+                                <tr>
+                                    <td>Hair Dye / Colouring</td>
+                                    <td>£35</td>
+                                </tr>
+                                <tr>
+                                    <td>Styling / Cut</td>
+                                    <td>£15</td>
+                                </tr>
+                                <tr>
+                                    <td>Hair Ups</td>
+                                    <td>£20</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Appointment Section -->
+    <section id="appointment" class="appointment py-5">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2 class="text-gold">Book Appointment</h2>
+            </div>
+            <div class="row g-5">
+                <div class="col-lg-5">
+                    <div class="contact-info h-100">
+                        <h3 class="mb-4 text-gold">Contact Info</h3>
+                        <p><i class="fas fa-phone text-gold me-2"></i> 07927 799217</p>
+                        <p><i class="fas fa-envelope text-gold me-2"></i> hairby.beaux@gmail.com</p>
+                        <hr class="border-gold">
+                        <h5 class="text-gold mt-3">Opening Hours</h5>
+                        <ul class="list-unstyled text-white-50">
+                            <li>Tue: 12pm - 4pm</li>
+                            <li>Wed: 10am - 3pm</li>
+                            <li>Thu: 10am - 3pm</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="appointment-form">
+                        <h3 class="text-gold mb-4 text-center">Details</h3>
+                        <form id="booking-form">
+                            <div class="mb-3">
+                                <label class="form-label text-white">Full Name</label>
+                                <input type="text" id="customer-name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-white">Phone Number</label>
+                                <!-- FIXED: Removed hardcoded value so customers enter their own number -->
+                                <input type="tel" id="customer-phone" class="form-control"
+                                    placeholder="e.g. 07927 799217" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-white">Service</label>
+                                <select id="service-select" class="form-select" required>
+                                    <option value="">Choose a service</option>
+                                    <option value="Wash / Blow Dry">Wash / Blow Dry – £25</option>
+                                    <option value="Hair Dye / Colouring">Hair Dye / Colouring – £35</option>
+                                    <option value="Styling">Styling – £15</option>
+                                    <option value="Hair Ups">Hair Ups – £20</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-white">Date</label>
+                                    <select id="booking-date" class="form-select" required></select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-white">Time</label>
+                                    <select id="booking-time" class="form-select" required disabled></select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary-custom w-100">Confirm Booking</button>
+                        </form>
+                        <div id="booking-message" class="mt-3 small text-center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ADMIN DASHBOARD (Hidden by default)        -->
+    <!-- ========================================== -->
+    <div id="admin-dashboard" class="d-none">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-gold"><i class="fas fa-lock me-2"></i>Admin Dashboard</h2>
+                <div>
+                    <button id="refreshBtn" class="btn btn-outline-warning me-2" onclick="refreshAdminUI()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-danger" onclick="logoutAdmin()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h5 class="text-muted">Today's Bookings</h5>
+                        <h2 class="text-gold" id="stat-today">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h5 class="text-muted">Est. Revenue</h5>
+                        <h2 class="text-success" id="stat-revenue">£0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h5 class="text-muted">Active</h5>
+                        <h2 class="text-white" id="stat-active">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h5 class="text-muted">Total Records</h5>
+                        <h2 class="text-white" id="stat-total">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Calendar Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="bg-charcoal p-3 rounded border border-gold">
+                        <h4 class="text-center text-gold mb-3" id="calendarMonthYear"></h4>
+                        <div class="calendar-grid" id="calendarHeader"></div>
+                        <div class="calendar-grid mt-2" id="calendarDays"></div>
+                    </div>
+                </div>
+
+                <!-- Table Column -->
+                <div class="col-lg-8">
+                    <div class="bg-charcoal p-3 rounded border border-gold">
+                        <h4 class="text-gold mb-3">Upcoming Appointments</h4>
+                        <div class="table-responsive">
+                            <table class="table table-dark-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Service</th>
+                                        <th>Date/Time</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTableBody">
+                                    <!-- JS will populate this -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-gold">
+                <div class="modal-header border-gold">
+                    <h5 class="text-gold">Admin Login</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="password" id="adminPassword" class="form-control" placeholder="Enter passcode">
+                </div>
+                <div class="modal-footer border-gold">
+                    <button class="btn btn-gold" style="background:var(--gold); color:black;"
+                        onclick="attemptLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        // --- CONFIGURATION ---
+        // Empty string means "use current domain". Works on Localhost AND Render automatically.
+        const API_BASE = "";
+
+        const ADMIN_CODE = "beau2026";
+
+        const priceMap = {
+            "Wash / Blow Dry": 25,
+            "Hair Dye / Colouring": 35,
+            "Styling": 15,
+            "Hair Ups": 20
+        };
+
+        const openingHours = {
+            2: ["12:00", "13:00", "14:00", "15:00"], // Tue
+            3: ["10:00", "11:00", "12:00", "13:00", "14:00"], // Wed
+            4: ["10:00", "11:00", "12:00", "13:00", "14:00"]  // Thu
+        };
+
+        // --- API FUNCTIONS ---
+
+        async function fetchBookings() {
+            try {
+                const res = await fetch(`${API_BASE}/bookings`);
+                if (!res.ok) throw new Error("Failed to fetch");
+                return await res.json();
+            } catch (err) {
+                console.error("Error fetching bookings:", err);
+                return [];
+            }
+        }
+
+        async function deleteBookingOnServer(id) {
+            if (!confirm("Delete this booking permanently?")) return;
+            try {
+                await fetch(`${API_BASE}/bookings/${id}`, { method: 'DELETE' });
+                refreshAdminUI();
+            } catch (err) {
+                alert("Failed to delete booking");
+            }
+        }
+
+        // --- FRONTEND LOGIC ---
+
+        function populateAvailableDates() {
+            const select = document.getElementById("booking-date");
+            select.innerHTML = `<option value="">Choose a date</option>`;
+            const today = new Date();
+            for (let i = 0; i < 60; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                if (openingHours[d.getDay()]) {
+                    const opt = document.createElement("option");
+                    opt.value = d.toISOString().split('T')[0];
+                    opt.textContent = d.toLocaleDateString("en-GB", { weekday: 'short', day: 'numeric', month: 'short' });
+                    select.appendChild(opt);
+                }
+            }
+        }
+
+        async function populateAvailableTimes() {
+            const date = document.getElementById("booking-date").value;
+            const select = document.getElementById("booking-time");
+            select.innerHTML = `<option value="">Choose a time</option>`;
+            select.disabled = true;
+            if (!date) return;
+
+            const bookings = await fetchBookings();
+            const day = new Date(date).getDay();
+            const times = openingHours[day] || [];
+
+            const booked = bookings
+                .filter(b => b.date === date && b.status === "active")
+                .map(b => b.time);
+
+            times.forEach(t => {
+                if (!booked.includes(t)) {
+                    const opt = document.createElement("option");
+                    opt.value = t;
+                    opt.textContent = t;
+                    select.appendChild(opt);
+                }
+            });
+            select.disabled = false;
+        }
+
+        async function submitBooking(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Processing Payment...";
+            btn.disabled = true;
+
+            const name = document.getElementById("customer-name").value.trim();
+            const phone = document.getElementById("customer-phone").value.trim();
+            const service = document.getElementById("service-select").value;
+            const date = document.getElementById("booking-date").value;
+            const time = document.getElementById("booking-time").value;
+
+            if (!name || !phone || !service || !date || !time) {
+                setBookingMsg("Please fill all fields", "error");
+                btn.innerText = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/create-checkout-session`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, phone, service, date, time })
+                });
+
+                const data = await res.json();
+
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    throw new Error("No checkout URL returned");
+                }
+
+            } catch (err) {
+                console.error(err);
+                setBookingMsg("❌ Error processing request. Please try again.", "error");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function setBookingMsg(msg, type) {
+            const el = document.getElementById("booking-message");
+            el.className = `mt-3 small text-center ${type === "error" ? "text-danger" : "text-success"}`;
+            el.innerText = msg;
+        }
+
+        // --- ADMIN DASHBOARD LOGIC ---
+
+        function checkAdminAccess() {
+            const modal = new bootstrap.Modal(document.getElementById("loginModal"));
+            modal.show();
+        }
+
+        function attemptLogin() {
+            if (document.getElementById("adminPassword").value === ADMIN_CODE) {
+                document.getElementById("admin-dashboard").classList.remove("d-none");
+                bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
+                refreshAdminUI();
+            } else {
+                alert("❌ Wrong passcode");
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById("admin-dashboard").classList.add("d-none");
+            document.getElementById("adminPassword").value = "";
+        }
+
+        async function refreshAdminUI() {
+            const btn = document.getElementById("refreshBtn");
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+            }
+
+            const bookings = await fetchBookings();
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            // Stats
+            const activeBookings = bookings.filter(b => b.status === "active");
+            const todayCount = activeBookings.filter(b => b.date === todayStr).length;
+            const revenue = activeBookings.reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
+
+            document.getElementById("stat-today").innerText = todayCount;
+            document.getElementById("stat-revenue").innerText = "£" + revenue;
+            document.getElementById("stat-active").innerText = activeBookings.length;
+            document.getElementById("stat-total").innerText = bookings.length;
+
+            // Table
+            const tbody = document.getElementById("adminTableBody");
+            tbody.innerHTML = "";
+
+            const sorted = [...activeBookings].sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No upcoming bookings</td></tr>`;
+            } else {
+                sorted.forEach(b => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><strong>${escapeHtml(b.name)}</strong><br><small class="text-muted">${b.phone}</small></td>
+                        <td>${b.service}</td>
+                        <td>${b.date}<br><span class="text-gold">${b.time}</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                             <button class="btn btn-sm btn-outline-danger" onclick="deleteBookingOnServer(${b.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            renderCalendar(activeBookings);
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-sync-alt"></i> Refresh`;
+            }
+        }
+
+        function renderCalendar(bookings) {
+            const now = new Date();
+            const month = now.getMonth();
+            const year = now.getFullYear();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById("calendarMonthYear").innerText = `${monthNames[month]} ${year}`;
+
+            const header = document.getElementById("calendarHeader");
+            header.innerHTML = "";
+            ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(day => {
+                const div = document.createElement("div");
+                div.className = "cal-day-header";
+                div.innerText = day;
+                header.appendChild(div);
+            });
+
+            const daysContainer = document.getElementById("calendarDays");
+            daysContainer.innerHTML = "";
+
+            for (let i = 0; i < firstDay; i++) {
+                const div = document.createElement("div");
+                div.className = "cal-day";
+                div.style.background = "transparent";
+                daysContainer.appendChild(div);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const div = document.createElement("div");
+                div.className = "cal-day";
+                div.innerText = i;
+
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const count = bookings.filter(b => b.date === dateStr).length;
+
+                if (count > 0) {
+                    div.classList.add("has-booking");
+                    div.title = `${count} booking(s)`;
+                }
+                daysContainer.appendChild(div);
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+        }
+
+        // Initialize
+        document.addEventListener("DOMContentLoaded", () => {
+            populateAvailableDates();
+            document.getElementById("booking-form").addEventListener("submit", submitBooking);
+            document.getElementById("booking-date").addEventListener("change", populateAvailableTimes);
+        });
+    </script>
+</body>
+
+</html>
