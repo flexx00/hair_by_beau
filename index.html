@@ -483,9 +483,7 @@
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminTableBody">
-                                                <!-- Bookings will be populated here -->
-                                            </tbody>
+                                            <tbody id="adminTableBody"></tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -637,7 +635,7 @@
         }
 
         async function deleteBooking(bookingId) {
-            if (!confirm("Permanently delete this booking? This cannot be undone.")) return;
+            if (!confirm("Permanently delete this booking?")) return;
             try {
                 await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" });
             } catch (e) { }
@@ -686,7 +684,6 @@
             if (section === "calendar") renderCalendar();
         }
 
-        // Client booking functions
         async function submitBooking(e) {
             e.preventDefault();
             const name = document.getElementById("customer-name").value.trim();
