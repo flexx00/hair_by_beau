@@ -12,215 +12,249 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
 
     <style>
         :root {
             --gold: #d4af37;
+            --soft-gold: #e8c670;
             --pink: #f8c8dc;
+            --deep-pink: #e89ab8;
             --dark: #111;
             --charcoal: #1a1a1a;
-            --border-gold: rgba(212, 175, 55, 0.3);
+            --light-pink: rgba(248, 200, 220, 0.15);
+            --border-gold: rgba(212, 175, 55, 0.35);
         }
 
-        .service-btn.active {
-            background-color: var(--gold) !important;
-            color: var(--dark) !important;
-            border-color: var(--gold) !important;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .day-card {
-            min-width: 90px;
-            background: var(--charcoal);
-            border: 1px solid var(--border-gold);
-            border-radius: 12px;
-            padding: 16px 12px;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f0a0d;
+            color: #f5f0f2;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar - Pink & Gold Luxury */
+        .navbar {
+            background: rgba(15, 10, 13, 0.98);
+            backdrop-filter: blur(12px);
+            padding: 1rem 0;
+            border-bottom: 2px solid var(--border-gold);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold) !important;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            margin: 0 0.6rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--pink) !important;
+        }
+
+        /* Hero - Romantic Pink & Gold */
+        .hero {
+            min-height: 92vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)),
+                url('https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            transition: all 0.25s ease;
-            cursor: pointer;
         }
 
-        .day-card:hover:not(.disabled) {
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.08);
+        .hero-content h1 {
+            font-size: 4.2rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            text-shadow: 0 4px 20px rgba(248, 200, 220, 0.3);
         }
 
-        .day-card.selected {
-            background: var(--gold) !important;
-            color: var(--dark) !important;
-            border-color: var(--gold);
+        .hero-content p {
+            color: var(--pink);
+            font-size: 1.25rem;
         }
 
-        .day-card.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            background: #0f0f0f;
+        /* Buttons */
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--gold), var(--soft-gold));
+            color: #111;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            border: none;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
-        .day-card .weekday {
-            font-size: 0.85rem;
-            color: #aaa;
+        .btn-primary-custom:hover {
+            background: linear-gradient(135deg, #c19b2e, var(--gold));
+            transform: translateY(-4px) scale(1.03);
+            color: #111;
+            box-shadow: 0 8px 25px rgba(248, 200, 220, 0.4);
         }
 
-        .day-card .date {
+        .btn-outline-custom {
+            border: 2px solid var(--pink);
+            color: var(--pink);
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 600;
+            background: transparent;
+            transition: all 0.4s ease;
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--pink);
+            color: #111;
+            border-color: var(--pink);
+        }
+
+        .text-gold {
+            color: var(--gold);
+        }
+
+        .text-pink {
+            color: var(--pink);
+        }
+
+        .bg-charcoal {
+            background: var(--charcoal);
+        }
+
+        .card-gold-border {
+            border: 1px solid var(--border-gold);
+            transition: all 0.4s ease;
+        }
+
+        .card-gold-border:hover {
+            border-color: var(--pink);
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(248, 200, 220, 0.2);
+        }
+
+        .price-display {
             font-size: 1.6rem;
             font-weight: 700;
+            color: var(--gold);
         }
 
-        .day-card .month {
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-
-        .time-slot {
-            min-width: 100px;
-            padding: 16px;
+        /* Form & Input Styling */
+        .form-control,
+        .form-select {
+            background: #2a1f24;
             border: 1px solid var(--border-gold);
+            color: white;
             border-radius: 12px;
-            background: var(--charcoal);
-            transition: all 0.25s ease;
-            cursor: pointer;
-            text-align: center;
         }
 
-        .time-slot:hover:not(.disabled) {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--pink);
-            background: rgba(248, 200, 220, 0.1);
+            box-shadow: 0 0 0 0.2rem rgba(248, 200, 220, 0.25);
+            background: #2a1f24;
         }
 
-        .time-slot.selected {
-            background: var(--pink) !important;
-            color: var(--dark) !important;
-            border-color: var(--pink);
+        /* Admin Dashboard - Pink & Gold Luxury */
+        .glass-panel {
+            background: rgba(26, 20, 24, 0.95);
+            border-radius: 20px;
+            border: 1px solid var(--border-gold);
+            backdrop-filter: blur(10px);
         }
 
-        .time-slot.disabled,
-        .time-slot.booked {
-            opacity: 0.4;
-            cursor: not-allowed;
-            background: #0f0f0f;
-            border-color: #333;
-        }
-
-        .calendar-scroll {
-            overflow-x: auto;
-            padding-bottom: 10px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold) #222;
-        }
-
-        .calendar-scroll::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .calendar-scroll::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 4px;
-        }
-
-        #calendar-container,
-        #time-container {
-            background: #222;
-            padding: 24px;
+        .stat-card {
+            background: #1f161a;
+            border: 1px solid var(--border-gold);
             border-radius: 16px;
-            border: 1px solid #444;
-        }
-
-        .booking-card {
-            background: #222;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 14px;
-            padding: 16px;
-        }
-
-        .badge-status {
-            font-size: 0.8rem;
-            padding: 0.4rem 0.7rem;
-            border-radius: 999px;
-        }
-
-        .status-active {
-            background: rgba(25, 135, 84, 0.2);
-            color: #8ee0b1;
-            border: 1px solid rgba(25, 135, 84, 0.4);
-        }
-
-        .status-cancelled {
-            background: rgba(220, 53, 69, 0.2);
-            color: #ffb3bc;
-            border: 1px solid rgba(220, 53, 69, 0.4);
-        }
-
-        .small-muted {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .gallery-img {
+            padding: 20px;
+            text-align: center;
             transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--pink);
+            transform: translateY(-5px);
+        }
+
+        .stat-card h6 {
+            color: #ddd;
+            font-size: 14px;
+        }
+
+        .stat-card h2 {
+            color: var(--gold);
+            margin: 8px 0 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .cal-day-header {
+            font-weight: 600;
+            color: var(--pink);
+            padding: 10px 0;
+        }
+
+        .cal-day {
+            background: #2a1f24;
+            padding: 14px 8px;
+            text-align: center;
             border-radius: 12px;
+            transition: all 0.3s ease;
         }
 
-        .gallery-img:hover {
-            transform: scale(1.05);
+        .cal-day.has-booking {
+            background: linear-gradient(135deg, var(--pink), #f4a6c8);
+            color: #111;
+            font-weight: 600;
         }
 
-        .admin-input {
-            background: #1a1a1a;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: white;
-        }
-
-        .admin-input:focus {
-            border-color: #d4af37;
-            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.2);
-            background: #1a1a1a;
-            color: white;
+        .booking-card:hover {
+            border-color: var(--pink);
+            transform: translateY(-4px);
         }
 
         .btn-gold {
-            background: #d4af37;
+            background: var(--gold);
             color: #111;
             font-weight: 600;
-            border: none;
         }
 
         .btn-gold:hover {
             background: #c19b2e;
         }
 
-        .booking-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 12px;
-            padding: 16px;
-            transition: 0.2s;
+        .gallery-img {
+            transition: 0.4s ease;
+            border-radius: 16px;
         }
 
-        .booking-card:hover {
-            transform: translateY(-3px);
-            border-color: #d4af37;
-        }
-
-        .booking-actions button {
-            font-size: 13px;
-        }
-
-        .stat-card {
-            background: #1a1a1a;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-        }
-
-        .stat-card h5 {
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        .stat-card h3 {
-            color: #d4af37;
-            margin: 0;
+        .gallery-img:hover {
+            transform: scale(1.06);
+            box-shadow: 0 15px 35px rgba(248, 200, 220, 0.25);
         }
     </style>
 </head>
@@ -278,8 +312,8 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
                     <div class="about-image">
-                        <img src="images/about1.avif" alt="Beau-Lily stylist creating elegant hairstyle"
-                            class="img-fluid rounded shadow">
+                        <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80"
+                            alt="Beau-Lily stylist" class="img-fluid rounded shadow">
                     </div>
                 </div>
                 <div class="col-lg-6" data-aos="fade-left">
@@ -294,6 +328,19 @@
                             we're dedicated to making your experience exceptional from start to finish.</p>
                         <a href="#appointment" class="btn btn-primary-custom mt-3">Book Now</a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Photos Section -->
+    <section id="photos" class="py-5 bg-dark">
+        <div class="container">
+            <h2 class="text-center text-gold mb-5" data-aos="fade-up">My Work</h2>
+            <div class="row g-4">
+                <div class="col-md-4"><img src="/images/before-after.png" class="img-fluid rounded gallery-img"
+                        alt="hair style"></div>
+                <div class="col-md-4"><img src="/images/hairup2.png" class="img-fluid rounded gallery-img" alt="salon">
                 </div>
             </div>
         </div>
@@ -400,38 +447,32 @@
             </div>
 
             <div class="row g-5">
+                <!-- Contact Info -->
                 <div class="col-lg-5 col-xl-4" data-aos="fade-right">
                     <div
                         class="contact-info bg-charcoal p-4 p-lg-5 rounded shadow border border-gold border-opacity-25 h-100">
                         <h3 class="mb-5 text-gold text-center text-lg-start">Contact Information</h3>
-
+                        <!-- Your contact items remain unchanged -->
                         <div class="contact-item mb-4">
                             <div class="d-flex align-items-start">
                                 <i class="fas fa-phone-alt fa-2x text-gold me-4 mt-1"></i>
                                 <div>
                                     <h5 class="mb-2 text-gold">Phone</h5>
-                                    <p class="mb-0 fs-5">
-                                        <a href="tel:+447418318122" class="text-white text-decoration-none">
-                                            +44 7418 318122
-                                        </a>
-                                    </p>
+                                    <p class="mb-0 fs-5"><a href="tel:+07927 799217"
+                                            class="text-white text-decoration-none">+07927 799217</a></p>
                                 </div>
                             </div>
                         </div>
-
                         <div class="contact-item mb-5">
                             <div class="d-flex align-items-start">
                                 <i class="fas fa-envelope fa-2x text-gold me-4 mt-1"></i>
                                 <div>
                                     <h5 class="mb-2 text-gold">Email</h5>
-                                    <p class="mb-0">
-                                        <a href="mailto:hairby.beaux@gmail.com"
-                                            class="text-white text-decoration-none">hairby.beaux@gmail.com</a>
-                                    </p>
+                                    <p class="mb-0"><a href="mailto:hairby.beaux@gmail.com"
+                                            class="text-white text-decoration-none">hairby.beaux@gmail.com</a></p>
                                 </div>
                             </div>
                         </div>
-
                         <div class="contact-item">
                             <div class="d-flex align-items-start">
                                 <i class="fas fa-clock fa-2x text-gold me-4 mt-1"></i>
@@ -449,6 +490,7 @@
                     </div>
                 </div>
 
+                <!-- Booking Form -->
                 <div class="col-lg-7" data-aos="fade-left">
                     <div
                         class="appointment-form bg-charcoal p-4 p-lg-5 rounded shadow-lg border border-gold border-opacity-25">
@@ -461,13 +503,11 @@
                                 <label for="customer-name" class="form-label text-white">Full Name</label>
                                 <input type="text" id="customer-name" class="form-control" required>
                             </div>
-
                             <div class="mb-3">
                                 <label for="customer-phone" class="form-label text-white">Phone Number</label>
                                 <input type="tel" id="customer-phone" class="form-control" placeholder="+447........"
                                     required>
                             </div>
-
                             <div class="mb-3">
                                 <label for="service-select" class="form-label text-white">Service</label>
                                 <select id="service-select" class="form-select" required>
@@ -478,7 +518,6 @@
                                     <option value="Hair Ups">Hair Ups – £20</option>
                                 </select>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="booking-date" class="form-label text-white">Date</label>
@@ -493,133 +532,127 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="mb-4">
                                 <label for="booking-stylist" class="form-label text-white">Stylist</label>
-                                <input type="text" id="booking-stylist" class="form-control" value="Beau-Lily">
+                                <input type="text" id="booking-stylist" class="form-control" value="Beau-Lily" readonly>
                             </div>
-
                             <button type="submit" class="btn btn-primary-custom w-100">Confirm Booking</button>
                         </form>
 
                         <div id="booking-message" class="mt-3 small text-center"></div>
-
-                        <p class="text-white-50 small mt-4 mb-0 text-center">
-                            Reminder texts are sent automatically before the appointment.
-                        </p>
+                        <p class="text-white-50 small mt-4 mb-0 text-center">Reminder texts are sent automatically
+                            before the appointment.</p>
                     </div>
                 </div>
             </div>
 
-            <div id="admin-panel" class="d-none p-4 my-5">
-
-                <h2 class="text-gold mb-4">Admin Dashboard</h2>
-
-                <!-- STATS -->
-                <div class="row g-3 mb-4 text-center">
-
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <h5>Total</h5>
-                            <h3 id="stat-total">0</h3>
+            <!-- Admin Dashboard -->
+            <div id="admin-dashboard" class="d-none mt-5">
+                <div class="container-fluid px-4 py-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                        <h2 class="text-gold">Salon Dashboard</h2>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-light me-2" onclick="showSection('overview')">
+                                <i class="fas fa-chart-bar"></i> Overview
+                            </button>
+                            <button class="btn btn-outline-light me-2" onclick="showSection('calendar')">
+                                <i class="fas fa-calendar"></i> Calendar
+                            </button>
+                            <button class="btn btn-outline-success me-2" onclick="refreshAdminUI()">
+                                <i class="fas fa-sync-alt"></i> Refresh Bookings
+                            </button>
+                            <button class="btn btn-outline-light" onclick="logoutAdmin()">Logout</button>
                         </div>
                     </div>
 
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <h5>Active</h5>
-                            <h3 id="stat-active">0</h3>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <h5>Cancelled</h5>
-                            <h3 id="stat-cancelled">0</h3>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <h5>Revenue (£)</h5>
-                            <h3 id="stat-revenue">0</h3>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- FILTER BAR -->
-                <div class="row g-3 mb-4">
-
-                    <div class="col-md-4">
-                        <input type="text" id="admin-search" class="form-control admin-input"
-                            placeholder="Search bookings...">
-                    </div>
-
-                    <div class="col-md-3">
-                        <select id="admin-filter" class="form-select admin-input">
-                            <option value="">All Services</option>
-                            <option value="Wash / Blow Dry">Wash / Blow Dry</option>
-                            <option value="Hair Dye / Colouring">Hair Dye / Colouring</option>
-                            <option value="Styling">Styling</option>
-                            <option value="Hair Ups">Hair Ups</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-3">
-                        <select id="admin-status-filter" class="form-select admin-input">
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2 d-grid gap-2">
-                        <button onclick="exportCSV()" class="btn btn-gold">
-                            Export
-                        </button>
-
-                        <button onclick="addTestBooking()" class="btn btn-outline-light">
-                            + Test Booking
-                        </button>
-
-                        <!-- ✅ STRIPE TEST BUTTON -->
-                        <button id="test-stripe-btn" class="btn btn-warning" style="display:none;">
-                            🧪 Test Stripe
-                        </button>
-                    </div>
-
-                    <!-- BOOKINGS -->
-                    <div id="admin-bookings-list" class="row g-3"></div>
-
-                    <div id="admin-empty" class="text-center text-muted mt-4 d-none">
-                        No bookings found.
-                    </div>
-
-                </div>
-
-                <section id="photos" class="gallery py-5 bg-dark">
-                    <div class="container">
-
-                        <h2 class="text-center text-gold mb-5" data-aos="fade-up">
-                            Our Work
-                        </h2>
-
-                        <div class="row g-4">
-
-                            <div class="col-6 col-md-4" data-aos="zoom-in">
-                                <img src="/images/before-after.png" alt="Before and after hair transformation"
-                                    class="img-fluid rounded shadow">
+                    <!-- Overview -->
+                    <div id="section-overview">
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h6>Today's Bookings</h6>
+                                    <h2 id="stat-today">0</h2>
+                                </div>
                             </div>
-
-                            <div class="col-6 col-md-4" data-aos="zoom-in" data-aos-delay="100">
-                                <img src="/images/hairup2.png" alt="Hair Up Style" class="img-fluid rounded shadow">
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h6>Monthly Revenue</h6>
+                                    <h2 id="stat-revenue" class="text-success">£0</h2>
+                                </div>
                             </div>
-
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h6>Active Bookings</h6>
+                                    <h2 id="stat-active">0</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <h6>Total Clients</h6>
+                                    <h2 id="stat-total">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 mb-4">
+                                <div class="glass-panel p-4">
+                                    <h5 class="text-gold">Service Demand</h5>
+                                    <canvas id="serviceChart" height="200"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-lg-8">
+                                <div class="glass-panel p-0">
+                                    <div class="p-3 border-bottom">
+                                        <h5>Upcoming Appointments</h5>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-dark table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Client</th>
+                                                    <th>Service</th>
+                                                    <th>Date/Time</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="adminTableBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </section>
+
+                    <!-- Calendar -->
+                    <div id="section-calendar" class="d-none">
+                        <div class="glass-panel p-4">
+                            <h3 class="text-gold" id="calendarMonthYear"></h3>
+                            <div class="calendar-grid" id="calendarHeader"></div>
+                            <div id="calendarDays" class="calendar-grid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
+
+    <!-- Admin Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-gold">
+                <div class="modal-header border-gold">
+                    <h5 class="text-gold">Admin Login</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="password" id="adminPassword" class="form-control" placeholder="Enter passcode">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-gold" onclick="attemptLogin()">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
@@ -627,211 +660,285 @@
     <script>
         AOS.init({ duration: 800, once: true });
 
-        // 🔥 YOUR LIVE BACKEND URL
+        // ---------- CONFIG ----------
         const API_BASE = "https://hair-by-beau.onrender.com";
+        const ADMIN_CODE = "beau2026";
+        let allBookings = [];
+        let serviceChart = null;
 
-        // ================= OPENING HOURS =================
         const openingHours = {
             2: ["12:00", "13:00", "14:00", "15:00"],
             3: ["10:00", "11:00", "12:00", "13:00", "14:00"],
             4: ["10:00", "11:00", "12:00", "13:00", "14:00"]
         };
+        const priceMap = { "Wash / Blow Dry": 25, "Hair Dye / Colouring": 35, "Styling": 15, "Hair Ups": 20 };
 
-        // ================= UTIL =================
-        function setBookingMessage(message, type = "info") {
-            const box = document.getElementById("booking-message");
-            if (!box) return;
-
-            box.className = `mt-3 small text-center ${type === "success" ? "text-success" :
-                    type === "error" ? "text-danger" :
-                        "text-white-50"
-                }`;
-
-            box.textContent = message;
+        // ---------- STORAGE HELPERS ----------
+        async function fetchBookings() {
+            try {
+                const res = await fetch(`${API_BASE}/bookings`);
+                if (res.ok) {
+                    const data = await res.json();
+                    allBookings = Array.isArray(data) ? data : [];
+                    localStorage.setItem("hb_backup", JSON.stringify(allBookings));
+                    return allBookings;
+                }
+                throw new Error();
+            } catch (e) {
+                console.warn("Using localStorage fallback");
+                const local = localStorage.getItem("hb_backup");
+                allBookings = local ? JSON.parse(local) : [];
+                if (allBookings.length === 0) seedDemoBookings();
+                return allBookings;
+            }
         }
 
-        function normalizePhone(phone) {
-            return String(phone || "").trim().replace(/\s+/g, "");
-        }
-
-        function formatDisplayDate(dateString) {
-            return new Date(dateString).toLocaleDateString("en-GB", {
-                weekday: "short",
-                day: "numeric",
-                month: "short"
-            });
-        }
-
-        function toISODate(date) {
-            return date.toISOString().split("T")[0];
-        }
-
-        // ================= DATE/TIME =================
-        function populateAvailableDates() {
-            const dateSelect = document.getElementById("booking-date");
-            const timeSelect = document.getElementById("booking-time");
-
-            if (!dateSelect || !timeSelect) return;
-
-            dateSelect.innerHTML = `<option value="">Choose a date</option>`;
-            timeSelect.innerHTML = `<option value="">Choose a time</option>`;
-            timeSelect.disabled = true;
-
+        function seedDemoBookings() {
             const today = new Date();
+            const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+            const dayAfter = new Date(today); dayAfter.setDate(today.getDate() + 2);
+            allBookings = [
+                { id: 1001, name: "Emma Watson", phone: "+447000000001", service: "Wash / Blow Dry", date: tomorrow.toISOString().split('T')[0], time: "12:00", status: "active" },
+                { id: 1002, name: "Olivia Rose", phone: "+447000000002", service: "Hair Dye / Colouring", date: dayAfter.toISOString().split('T')[0], time: "14:00", status: "active" }
+            ];
+            saveBookingsLocal();
+        }
 
+        function saveBookingsLocal() { localStorage.setItem("hb_backup", JSON.stringify(allBookings)); }
+
+        async function addBookingToStore(newBooking) {
+            newBooking.id = Date.now();
+            newBooking.status = "active";
+            allBookings.push(newBooking);
+            saveBookingsLocal();
+            try {
+                await fetch(`${API_BASE}/book`, { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newBooking) });
+            } catch (e) { }
+            return newBooking;
+        }
+
+        async function cancelBookingById(bookingId) {
+            const index = allBookings.findIndex(b => b.id == bookingId);
+            if (index !== -1) {
+                allBookings[index].status = "cancelled";
+                saveBookingsLocal();
+                try { await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" }); } catch (e) { }
+                await refreshAdminUI();
+                return true;
+            }
+            return false;
+        }
+
+        // ---------- AVAILABILITY ----------
+        function getBookedSlotsForDate(dateStr) {
+            return allBookings.filter(b => b.date === dateStr && b.status === "active").map(b => b.time);
+        }
+
+        function populateAvailableDates() {
+            const select = document.getElementById("booking-date");
+            if (!select) return;
+            select.innerHTML = `<option value="">Choose a date</option>`;
+            const today = new Date();
             for (let i = 0; i < 30; i++) {
-                const date = new Date(today);
-                date.setDate(today.getDate() + i);
-
-                if (!openingHours[date.getDay()]) continue;
-
-                const option = document.createElement("option");
-                option.value = toISODate(date);
-                option.textContent = date.toLocaleDateString("en-GB");
-
-                dateSelect.appendChild(option);
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                if (openingHours[d.getDay()]) {
+                    const opt = document.createElement("option");
+                    opt.value = d.toISOString().split('T')[0];
+                    opt.textContent = d.toLocaleDateString("en-GB", { weekday: 'short', day: 'numeric', month: 'short' });
+                    select.appendChild(opt);
+                }
             }
         }
 
         function populateAvailableTimes() {
-            const date = document.getElementById("booking-date")?.value;
+            const date = document.getElementById("booking-date").value;
             const timeSelect = document.getElementById("booking-time");
-
-            if (!timeSelect) return;
-
-            timeSelect.innerHTML = `<option value="">Choose a time</option>`;
-
-            if (!date) {
+            if (!date || !openingHours[new Date(date).getDay()]) {
+                timeSelect.innerHTML = `<option value="">Select time</option>`;
                 timeSelect.disabled = true;
                 return;
             }
-
-            const times = openingHours[new Date(date).getDay()] || [];
-
-            times.forEach(t => {
-                const option = document.createElement("option");
-                option.value = t;
-                option.textContent = t;
-                timeSelect.appendChild(option);
+            const booked = getBookedSlotsForDate(date);
+            const possible = openingHours[new Date(date).getDay()];
+            timeSelect.innerHTML = `<option value="">Choose time</option>`;
+            possible.forEach(t => {
+                if (!booked.includes(t)) {
+                    const opt = document.createElement("option");
+                    opt.value = t;
+                    opt.textContent = t;
+                    timeSelect.appendChild(opt);
+                }
             });
-
             timeSelect.disabled = false;
+            if (timeSelect.options.length === 1) timeSelect.disabled = true;
         }
 
-        function isValidOpeningSlot(date, time) {
-            return (openingHours[new Date(date).getDay()] || []).includes(time);
-        }
-
-        // ================= BOOKING =================
-        async function submitBooking() {
-            const name = document.getElementById("customer-name")?.value.trim();
-            const phone = normalizePhone(document.getElementById("customer-phone")?.value);
-            const service = document.getElementById("service-select")?.value;
-            const date = document.getElementById("booking-date")?.value;
-            const time = document.getElementById("booking-time")?.value;
-
+        // ---------- BOOKING SUBMIT ----------
+        async function submitBooking(e) {
+            e.preventDefault();
+            const name = document.getElementById("customer-name").value.trim();
+            const phone = document.getElementById("customer-phone").value.trim();
+            const service = document.getElementById("service-select").value;
+            const date = document.getElementById("booking-date").value;
+            const time = document.getElementById("booking-time").value;
             if (!name || !phone || !service || !date || !time) {
-                return setBookingMessage("Please complete all fields.", "error");
+                setBookingMsg("Please fill all fields", "error");
+                return;
             }
-
-            if (!isValidOpeningSlot(date, time)) {
-                return setBookingMessage("Invalid time slot.", "error");
+            if (getBookedSlotsForDate(date).includes(time)) {
+                setBookingMsg("This slot was just taken. Please pick another time.", "error");
+                populateAvailableTimes();
+                return;
             }
-
+            setBookingMsg("Redirecting to secure payment...", "info");
             try {
-                setBookingMessage("Redirecting to payment...");
-
                 const res = await fetch(`${API_BASE}/create-checkout-session`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, phone, service, date, time })
                 });
-
                 const data = await res.json();
-
-                if (!data.url) throw new Error();
-
-                window.location.href = data.url;
-
+                if (data.url) window.location.href = data.url;
+                else throw new Error();
             } catch (err) {
-                console.error(err);
-                setBookingMessage("❌ Payment failed. Backend not reachable.", "error");
-            }
-        }
-
-        // ================= STRIPE TEST BUTTON =================
-        function initStripeTestButton() {
-            const btn = document.getElementById("test-stripe-btn");
-            if (!btn) return;
-
-            btn.addEventListener("click", async () => {
-                try {
-                    const res = await fetch(`${API_BASE}/create-checkout-session`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            name: "Test Client",
-                            phone: "+447000000000",
-                            service: "Wash / Blow Dry",
-                            date: "2026-04-10",
-                            time: "12:00"
-                        })
-                    });
-
-                    const data = await res.json();
-
-                    if (!data.url) throw new Error();
-
-                    window.location.href = data.url;
-
-                } catch {
-                    alert("❌ Stripe test failed.");
+                if (confirm("⚠️ Payment service offline. Save as TEST booking (no real charge)?")) {
+                    const newBooking = { name, phone, service, date, time, status: "active" };
+                    await addBookingToStore(newBooking);
+                    setBookingMsg("✅ Test booking saved locally! (No payment taken)", "success");
+                    document.getElementById("booking-form").reset();
+                    populateAvailableDates();
+                    populateAvailableTimes();
+                    if (!document.getElementById("admin-dashboard").classList.contains("d-none")) refreshAdminUI();
+                } else {
+                    setBookingMsg("Booking failed. Please try again later.", "error");
                 }
+            }
+        }
+
+        function setBookingMsg(msg, type) {
+            const div = document.getElementById("booking-message");
+            div.className = `mt-3 small text-center text-${type === "error" ? "danger" : type === "success" ? "success" : "warning"}`;
+            div.innerText = msg;
+            setTimeout(() => div.innerText = "", 4000);
+        }
+
+        // ---------- ADMIN UI ----------
+        async function refreshAdminUI() {
+            await fetchBookings();
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayActive = allBookings.filter(b => b.date === todayStr && b.status === "active").length;
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthlyRevenue = allBookings.filter(b => {
+                const d = new Date(b.date);
+                return b.status === "active" && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            }).reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
+            const activeCount = allBookings.filter(b => b.status === "active").length;
+            document.getElementById("stat-today").innerText = todayActive;
+            document.getElementById("stat-revenue").innerHTML = `£${monthlyRevenue}`;
+            document.getElementById("stat-active").innerText = activeCount;
+            document.getElementById("stat-total").innerText = allBookings.length;
+            renderBookingsTable();
+            updateServiceChart();
+            renderCalendar();
+        }
+
+        function renderBookingsTable() {
+            const tbody = document.getElementById("adminTableBody");
+            if (!tbody) return;
+            const sorted = [...allBookings].sort((a, b) => new Date(a.date) - new Date(b.date));
+            tbody.innerHTML = sorted.map(b => `
+                <tr>
+                    <td><strong>${escapeHtml(b.name)}</strong><br><small>${b.phone}</small></td>
+                    <td>${b.service}</td>
+                    <td>${b.date}<br><span class="text-gold">${b.time}</span></td>
+                    <td><span class="badge-status ${b.status === 'active' ? 'status-active' : 'status-cancelled'}">${b.status}</span></td>
+                    <td>${b.status === 'active' ? `<button class="btn btn-sm btn-danger" onclick="cancelBookingById(${b.id})">Cancel</button>` : '—'}</td>
+                </tr>
+            `).join("");
+        }
+
+        function updateServiceChart() {
+            const ctx = document.getElementById("serviceChart")?.getContext("2d");
+            if (!ctx) return;
+            const counts = { "Wash / Blow Dry": 0, "Hair Dye / Colouring": 0, "Styling": 0, "Hair Ups": 0 };
+            allBookings.forEach(b => { if (counts[b.service] !== undefined) counts[b.service]++; });
+            if (serviceChart) serviceChart.destroy();
+            serviceChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: Object.keys(counts), datasets: [{ label: 'Bookings', data: Object.values(counts), backgroundColor: '#d4af37' }] },
+                options: { responsive: true, maintainAspectRatio: true }
             });
         }
 
-        // ================= ADMIN =================
-        async function loadAdminBookings() {
-            let bookings = [];
-
-            try {
-                const res = await fetch(`${API_BASE}/bookings`);
-                bookings = await res.json();
-            } catch {
-                bookings = JSON.parse(localStorage.getItem("testBookings")) || [];
+        function renderCalendar() {
+            const container = document.getElementById("calendarDays");
+            const headerDiv = document.getElementById("calendarHeader");
+            if (!container) return;
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let html = "";
+            for (let i = 0; i < firstDay; i++) html += `<div class="cal-day"></div>`;
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const hasBooking = allBookings.some(b => b.date === dateStr && b.status === "active");
+                html += `<div class="cal-day ${hasBooking ? 'has-booking' : ''}">${d}${hasBooking ? ' ✨' : ''}</div>`;
             }
-
-            console.log("Bookings:", bookings);
+            container.innerHTML = html;
+            document.getElementById("calendarMonthYear").innerHTML = `<h5 class="text-gold">${today.toLocaleString('default', { month: 'long', year: 'numeric' })}</h5>`;
+            if (headerDiv) headerDiv.innerHTML = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => `<div class="cal-day-header">${day}</div>`).join('');
         }
 
-        // ================= LOGIN =================
+        function exportCSV() {
+            let csv = [["ID", "Name", "Phone", "Service", "Date", "Time", "Status"]];
+            allBookings.forEach(b => csv.push([b.id, b.name, b.phone, b.service, b.date, b.time, b.status]));
+            const blob = new Blob([csv.map(row => row.join(",")).join("\n")], { type: "text/csv" });
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hairbybeau_bookings.csv"; a.click();
+        }
+
+        function escapeHtml(str) { return str.replace(/[&<>]/g, function (m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+
+        // ---------- ADMIN LOGIN & NAVIGATION ----------
         function checkAdminAccess() {
-            const code = prompt("Enter admin code:");
-
-            if (code === "beauissmelly123!!xx") {
-                document.getElementById("admin-panel").classList.remove("d-none");
-
-                const btn = document.getElementById("test-stripe-btn");
-                if (btn) btn.style.display = "block";
-
-                loadAdminBookings();
-            }
+            const modal = new bootstrap.Modal(document.getElementById("loginModal"));
+            modal.show();
+        }
+        function attemptLogin() {
+            const pwd = document.getElementById("adminPassword").value;
+            if (pwd === ADMIN_CODE) {
+                document.getElementById("admin-dashboard").classList.remove("d-none");
+                bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
+                refreshAdminUI();
+            } else alert("Wrong passcode");
+        }
+        function logoutAdmin() { document.getElementById("admin-dashboard").classList.add("d-none"); }
+        function showSection(section) {
+            document.getElementById("section-overview").classList.toggle("d-none", section !== "overview");
+            document.getElementById("section-calendar").classList.toggle("d-none", section !== "calendar");
+            if (section === "calendar") renderCalendar();
+            else updateServiceChart();
         }
 
-        // ================= INIT =================
-        document.addEventListener("DOMContentLoaded", () => {
+        // ---------- EVENT LISTENERS ----------
+        document.addEventListener("DOMContentLoaded", async () => {
+            await fetchBookings();
             populateAvailableDates();
-            initStripeTestButton();
-
-            document.getElementById("booking-form")?.addEventListener("submit", e => {
-                e.preventDefault();
-                submitBooking();
-            });
-
-            document.getElementById("booking-date")?.addEventListener("change", populateAvailableTimes);
+            document.getElementById("booking-form").addEventListener("submit", submitBooking);
+            document.getElementById("booking-date").addEventListener("change", populateAvailableTimes);
+            const adminHeader = document.querySelector("#admin-dashboard .d-flex.justify-content-between.align-items-center div");
+            if (adminHeader) {
+                const exportBtn = document.createElement("button");
+                exportBtn.className = "btn btn-outline-warning me-2";
+                exportBtn.innerHTML = "📎 Export CSV";
+                exportBtn.onclick = exportCSV;
+                adminHeader.insertBefore(exportBtn, adminHeader.children[1]);
+            }
         });
     </script>
-
 </body>
 
 </html>
