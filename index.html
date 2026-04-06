@@ -671,9 +671,15 @@
             3: ["10:00", "11:00", "12:00", "13:00", "14:00"],
             4: ["10:00", "11:00", "12:00", "13:00", "14:00"]
         };
-        const priceMap = { "Wash / Blow Dry": 25, "Hair Dye / Colouring": 35, "Styling": 15, "Hair Ups": 20 };
 
-        // ---------- STORAGE HELPERS ----------
+        const priceMap = {
+            "Wash / Blow Dry": 25,
+            "Hair Dye / Colouring": 35,
+            "Styling": 15,
+            "Hair Ups": 20
+        };
+
+        // ---------- STORAGE & FETCH ----------
         async function fetchBookings() {
             try {
                 const res = await fetch(`${API_BASE}/bookings`);
@@ -683,20 +689,22 @@
                     localStorage.setItem("hb_backup", JSON.stringify(allBookings));
                     return allBookings;
                 }
-                throw new Error();
             } catch (e) {
-                console.warn("Using localStorage fallback");
-                const local = localStorage.getItem("hb_backup");
-                allBookings = local ? JSON.parse(local) : [];
-                if (allBookings.length === 0) seedDemoBookings();
-                return allBookings;
+                console.warn("Backend unreachable - using local cache");
             }
+
+            // Fallback to localStorage
+            const local = localStorage.getItem("hb_backup");
+            allBookings = local ? JSON.parse(local) : [];
+            if (allBookings.length === 0) seedDemoBookings();
+            return allBookings;
         }
 
         function seedDemoBookings() {
             const today = new Date();
             const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
             const dayAfter = new Date(today); dayAfter.setDate(today.getDate() + 2);
+
             allBookings = [
                 { id: 1001, name: "Emma Watson", phone: "+447000000001", service: "Wash / Blow Dry", date: tomorrow.toISOString().split('T')[0], time: "12:00", status: "active" },
                 { id: 1002, name: "Olivia Rose", phone: "+447000000002", service: "Hair Dye / Colouring", date: dayAfter.toISOString().split('T')[0], time: "14:00", status: "active" }
@@ -704,238 +712,203 @@
             saveBookingsLocal();
         }
 
-        function saveBookingsLocal() { localStorage.setItem("hb_backup", JSON.stringify(allBookings)); }
-
-        async function addBookingToStore(newBooking) {
-            newBooking.id = Date.now();
-            newBooking.status = "active";
-            allBookings.push(newBooking);
-            saveBookingsLocal();
-            try {
-                await fetch(`${API_BASE}/book`, { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newBooking) });
-            } catch (e) { }
-            return newBooking;
+        function saveBookingsLocal() {
+            localStorage.setItem("hb_backup", JSON.stringify(allBookings));
         }
 
-        async function cancelBookingById(bookingId) {
-            const index = allBookings.findIndex(b => b.id == bookingId);
-            if (index !== -1) {
-                allBookings[index].status = "cancelled";
-                saveBookingsLocal();
-                try { await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" }); } catch (e) { }
-                await refreshAdminUI();
-                return true;
-            }
-            return false;
-        }
-
-        // ---------- AVAILABILITY ----------
-        function getBookedSlotsForDate(dateStr) {
-            return allBookings.filter(b => b.date === dateStr && b.status === "active").map(b => b.time);
-        }
-
-        function populateAvailableDates() {
-            const select = document.getElementById("booking-date");
-            if (!select) return;
-            select.innerHTML = `<option value="">Choose a date</option>`;
-            const today = new Date();
-            for (let i = 0; i < 30; i++) {
-                const d = new Date(today);
-                d.setDate(today.getDate() + i);
-                if (openingHours[d.getDay()]) {
-                    const opt = document.createElement("option");
-                    opt.value = d.toISOString().split('T')[0];
-                    opt.textContent = d.toLocaleDateString("en-GB", { weekday: 'short', day: 'numeric', month: 'short' });
-                    select.appendChild(opt);
-                }
-            }
-        }
-
-        function populateAvailableTimes() {
-            const date = document.getElementById("booking-date").value;
-            const timeSelect = document.getElementById("booking-time");
-            if (!date || !openingHours[new Date(date).getDay()]) {
-                timeSelect.innerHTML = `<option value="">Select time</option>`;
-                timeSelect.disabled = true;
-                return;
-            }
-            const booked = getBookedSlotsForDate(date);
-            const possible = openingHours[new Date(date).getDay()];
-            timeSelect.innerHTML = `<option value="">Choose time</option>`;
-            possible.forEach(t => {
-                if (!booked.includes(t)) {
-                    const opt = document.createElement("option");
-                    opt.value = t;
-                    opt.textContent = t;
-                    timeSelect.appendChild(opt);
-                }
-            });
-            timeSelect.disabled = false;
-            if (timeSelect.options.length === 1) timeSelect.disabled = true;
-        }
-
-        // ---------- BOOKING SUBMIT ----------
-        async function submitBooking(e) {
-            e.preventDefault();
-            const name = document.getElementById("customer-name").value.trim();
-            const phone = document.getElementById("customer-phone").value.trim();
-            const service = document.getElementById("service-select").value;
-            const date = document.getElementById("booking-date").value;
-            const time = document.getElementById("booking-time").value;
-            if (!name || !phone || !service || !date || !time) {
-                setBookingMsg("Please fill all fields", "error");
-                return;
-            }
-            if (getBookedSlotsForDate(date).includes(time)) {
-                setBookingMsg("This slot was just taken. Please pick another time.", "error");
-                populateAvailableTimes();
-                return;
-            }
-            setBookingMsg("Redirecting to secure payment...", "info");
-            try {
-                const res = await fetch(`${API_BASE}/create-checkout-session`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, phone, service, date, time })
-                });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-                else throw new Error();
-            } catch (err) {
-                if (confirm("⚠️ Payment service offline. Save as TEST booking (no real charge)?")) {
-                    const newBooking = { name, phone, service, date, time, status: "active" };
-                    await addBookingToStore(newBooking);
-                    setBookingMsg("✅ Test booking saved locally! (No payment taken)", "success");
-                    document.getElementById("booking-form").reset();
-                    populateAvailableDates();
-                    populateAvailableTimes();
-                    if (!document.getElementById("admin-dashboard").classList.contains("d-none")) refreshAdminUI();
-                } else {
-                    setBookingMsg("Booking failed. Please try again later.", "error");
-                }
-            }
-        }
-
-        function setBookingMsg(msg, type) {
-            const div = document.getElementById("booking-message");
-            div.className = `mt-3 small text-center text-${type === "error" ? "danger" : type === "success" ? "success" : "warning"}`;
-            div.innerText = msg;
-            setTimeout(() => div.innerText = "", 4000);
-        }
-
-        // ---------- ADMIN UI ----------
+        // ---------- REFRESH ADMIN UI (Main Fix) ----------
         async function refreshAdminUI() {
+            const refreshBtn = document.getElementById("refreshBtn");
+            if (refreshBtn) {
+                refreshBtn.disabled = true;
+                refreshBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Refreshing...`;
+            }
+
             await fetchBookings();
+
+            // Update Stats
             const todayStr = new Date().toISOString().split('T')[0];
             const todayActive = allBookings.filter(b => b.date === todayStr && b.status === "active").length;
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            const monthlyRevenue = allBookings.filter(b => {
-                const d = new Date(b.date);
-                return b.status === "active" && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-            }).reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
-            const activeCount = allBookings.filter(b => b.status === "active").length;
+            const monthlyRevenue = allBookings
+                .filter(b => b.status === "active")
+                .reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
+
             document.getElementById("stat-today").innerText = todayActive;
-            document.getElementById("stat-revenue").innerHTML = `£${monthlyRevenue}`;
-            document.getElementById("stat-active").innerText = activeCount;
+            document.getElementById("stat-revenue").innerText = `£${monthlyRevenue}`;
+            document.getElementById("stat-active").innerText = allBookings.filter(b => b.status === "active").length;
             document.getElementById("stat-total").innerText = allBookings.length;
+
+            // Update Table, Chart & Calendar
             renderBookingsTable();
             updateServiceChart();
             renderCalendar();
+
+            // Reset button
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = `<i class="fas fa-sync-alt"></i> Refresh Bookings`;
+            }
         }
 
+        // ---------- RENDER TABLE ----------
         function renderBookingsTable() {
             const tbody = document.getElementById("adminTableBody");
             if (!tbody) return;
-            const sorted = [...allBookings].sort((a, b) => new Date(a.date) - new Date(b.date));
-            tbody.innerHTML = sorted.map(b => `
-                <tr>
-                    <td><strong>${escapeHtml(b.name)}</strong><br><small>${b.phone}</small></td>
-                    <td>${b.service}</td>
-                    <td>${b.date}<br><span class="text-gold">${b.time}</span></td>
-                    <td><span class="badge-status ${b.status === 'active' ? 'status-active' : 'status-cancelled'}">${b.status}</span></td>
-                    <td>${b.status === 'active' ? `<button class="btn btn-sm btn-danger" onclick="cancelBookingById(${b.id})">Cancel</button>` : '—'}</td>
-                </tr>
-            `).join("");
-        }
 
-        function updateServiceChart() {
-            const ctx = document.getElementById("serviceChart")?.getContext("2d");
-            if (!ctx) return;
-            const counts = { "Wash / Blow Dry": 0, "Hair Dye / Colouring": 0, "Styling": 0, "Hair Ups": 0 };
-            allBookings.forEach(b => { if (counts[b.service] !== undefined) counts[b.service]++; });
-            if (serviceChart) serviceChart.destroy();
-            serviceChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: Object.keys(counts), datasets: [{ label: 'Bookings', data: Object.values(counts), backgroundColor: '#d4af37' }] },
-                options: { responsive: true, maintainAspectRatio: true }
+            tbody.innerHTML = "";
+
+            const sorted = [...allBookings].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            sorted.forEach(b => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td><strong>${escapeHtml(b.name || '')}</strong><br><small>${b.phone || ''}</small></td>
+                <td>${b.service || ''}</td>
+                <td>${b.date || ''}<br><span class="text-gold">${b.time || ''}</span></td>
+                <td><span class="badge ${b.status === 'active' ? 'bg-success' : 'bg-danger'}">${b.status || 'unknown'}</span></td>
+                <td>
+                    ${b.status === 'active' ?
+                        `<button class="btn btn-sm btn-danger" onclick="cancelBookingById(${b.id})">Cancel</button>` :
+                        '—'}
+                </td>
+            `;
+                tbody.appendChild(tr);
             });
         }
 
+        // ---------- CHART ----------
+        function updateServiceChart() {
+            const ctx = document.getElementById("serviceChart")?.getContext("2d");
+            if (!ctx) return;
+
+            const counts = { "Wash / Blow Dry": 0, "Hair Dye / Colouring": 0, "Styling": 0, "Hair Ups": 0 };
+            allBookings.forEach(b => {
+                if (counts[b.service] !== undefined) counts[b.service]++;
+            });
+
+            if (serviceChart) serviceChart.destroy();
+
+            serviceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        label: 'Bookings',
+                        data: Object.values(counts),
+                        backgroundColor: '#d4af37'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+        }
+
+        // ---------- CALENDAR ----------
         function renderCalendar() {
             const container = document.getElementById("calendarDays");
-            const headerDiv = document.getElementById("calendarHeader");
             if (!container) return;
+
             const today = new Date();
             const year = today.getFullYear();
             const month = today.getMonth();
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
+
             let html = "";
             for (let i = 0; i < firstDay; i++) html += `<div class="cal-day"></div>`;
+
             for (let d = 1; d <= daysInMonth; d++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const hasBooking = allBookings.some(b => b.date === dateStr && b.status === "active");
                 html += `<div class="cal-day ${hasBooking ? 'has-booking' : ''}">${d}${hasBooking ? ' ✨' : ''}</div>`;
             }
+
             container.innerHTML = html;
-            document.getElementById("calendarMonthYear").innerHTML = `<h5 class="text-gold">${today.toLocaleString('default', { month: 'long', year: 'numeric' })}</h5>`;
-            if (headerDiv) headerDiv.innerHTML = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => `<div class="cal-day-header">${day}</div>`).join('');
+
+            const monthYear = document.getElementById("calendarMonthYear");
+            if (monthYear) {
+                monthYear.innerHTML = `<h5 class="text-gold">${today.toLocaleString('default', { month: 'long', year: 'numeric' })}</h5>`;
+            }
+        }
+
+        // ---------- CANCEL BOOKING ----------
+        async function cancelBookingById(bookingId) {
+            if (!confirm("Cancel this booking?")) return;
+
+            const index = allBookings.findIndex(b => b.id == bookingId);
+            if (index !== -1) {
+                allBookings[index].status = "cancelled";
+                saveBookingsLocal();
+                try {
+                    await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" });
+                } catch (e) { }
+            }
+
+            await refreshAdminUI();
+        }
+
+        // ---------- OTHER FUNCTIONS ----------
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, function (m) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+            });
         }
 
         function exportCSV() {
             let csv = [["ID", "Name", "Phone", "Service", "Date", "Time", "Status"]];
             allBookings.forEach(b => csv.push([b.id, b.name, b.phone, b.service, b.date, b.time, b.status]));
             const blob = new Blob([csv.map(row => row.join(",")).join("\n")], { type: "text/csv" });
-            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "hairbybeau_bookings.csv"; a.click();
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "hairbybeau_bookings.csv";
+            a.click();
         }
 
-        function escapeHtml(str) { return str.replace(/[&<>]/g, function (m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
-
-        // ---------- ADMIN LOGIN & NAVIGATION ----------
+        // ---------- ADMIN LOGIN ----------
         function checkAdminAccess() {
             const modal = new bootstrap.Modal(document.getElementById("loginModal"));
             modal.show();
         }
+
         function attemptLogin() {
-            const pwd = document.getElementById("adminPassword").value;
+            const pwd = document.getElementById("adminPassword").value.trim();
             if (pwd === ADMIN_CODE) {
                 document.getElementById("admin-dashboard").classList.remove("d-none");
                 bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
                 refreshAdminUI();
-            } else alert("Wrong passcode");
+            } else {
+                alert("❌ Wrong passcode");
+            }
         }
-        function logoutAdmin() { document.getElementById("admin-dashboard").classList.add("d-none"); }
+
+        function logoutAdmin() {
+            document.getElementById("admin-dashboard").classList.add("d-none");
+        }
+
         function showSection(section) {
             document.getElementById("section-overview").classList.toggle("d-none", section !== "overview");
             document.getElementById("section-calendar").classList.toggle("d-none", section !== "calendar");
             if (section === "calendar") renderCalendar();
-            else updateServiceChart();
         }
 
-        // ---------- EVENT LISTENERS ----------
+        // ---------- INIT ----------
         document.addEventListener("DOMContentLoaded", async () => {
             await fetchBookings();
+
             populateAvailableDates();
             document.getElementById("booking-form").addEventListener("submit", submitBooking);
             document.getElementById("booking-date").addEventListener("change", populateAvailableTimes);
+
+            // Add Export CSV button if admin header exists
             const adminHeader = document.querySelector("#admin-dashboard .d-flex.justify-content-between.align-items-center div");
             if (adminHeader) {
                 const exportBtn = document.createElement("button");
                 exportBtn.className = "btn btn-outline-warning me-2";
-                exportBtn.innerHTML = "📎 Export CSV";
+                exportBtn.innerHTML = `<i class="fas fa-download"></i> Export CSV`;
                 exportBtn.onclick = exportCSV;
-                adminHeader.insertBefore(exportBtn, adminHeader.children[1]);
+                adminHeader.appendChild(exportBtn);
             }
         });
     </script>
