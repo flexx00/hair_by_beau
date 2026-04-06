@@ -232,11 +232,6 @@
             font-weight: 600;
         }
 
-        .booking-card:hover {
-            border-color: var(--pink);
-            transform: translateY(-4px);
-        }
-
         .btn-gold {
             background: var(--gold);
             color: #111;
@@ -452,7 +447,6 @@
                     <div
                         class="contact-info bg-charcoal p-4 p-lg-5 rounded shadow border border-gold border-opacity-25 h-100">
                         <h3 class="mb-5 text-gold text-center text-lg-start">Contact Information</h3>
-                        <!-- Your contact items remain unchanged -->
                         <div class="contact-item mb-4">
                             <div class="d-flex align-items-start">
                                 <i class="fas fa-phone-alt fa-2x text-gold me-4 mt-1"></i>
@@ -558,7 +552,7 @@
                             <button class="btn btn-outline-light me-2" onclick="showSection('calendar')">
                                 <i class="fas fa-calendar"></i> Calendar
                             </button>
-                            <button class="btn btn-outline-success me-2" onclick="refreshAdminUI()">
+                            <button class="btn btn-outline-success me-2" id="refreshBtn" onclick="refreshAdminUI()">
                                 <i class="fas fa-sync-alt"></i> Refresh Bookings
                             </button>
                             <button class="btn btn-outline-light" onclick="logoutAdmin()">Logout</button>
@@ -594,12 +588,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-4 mb-4">
-                                <div class="glass-panel p-4">
-                                    <h5 class="text-gold">Service Demand</h5>
-                                    <canvas id="serviceChart" height="200"></canvas>
-                                </div>
-                            </div>
                             <div class="col-lg-8">
                                 <div class="glass-panel p-0">
                                     <div class="p-3 border-bottom">
@@ -613,7 +601,7 @@
                                                     <th>Service</th>
                                                     <th>Date/Time</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
+                                                    <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="adminTableBody"></tbody>
@@ -679,31 +667,28 @@
             "Hair Ups": 20
         };
 
-        // ---------- STORAGE & FETCH ----------
+        // ---------- FETCH & STORAGE ----------
         async function fetchBookings() {
             try {
                 const res = await fetch(`${API_BASE}/bookings`);
                 if (res.ok) {
-                    const data = await res.json();
-                    allBookings = Array.isArray(data) ? data : [];
+                    allBookings = await res.json();
                     localStorage.setItem("hb_backup", JSON.stringify(allBookings));
                     return allBookings;
                 }
             } catch (e) {
-                console.warn("Backend unreachable - using local cache");
+                console.warn("Backend unreachable - using cache");
             }
-
-            // Fallback to localStorage
-            const local = localStorage.getItem("hb_backup");
-            allBookings = local ? JSON.parse(local) : [];
+            const cached = localStorage.getItem("hb_backup");
+            allBookings = cached ? JSON.parse(cached) : [];
             if (allBookings.length === 0) seedDemoBookings();
             return allBookings;
         }
 
         function seedDemoBookings() {
             const today = new Date();
-            const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-            const dayAfter = new Date(today); dayAfter.setDate(today.getDate() + 2);
+            const tomorrow = new Date(today.getTime() + 86400000);
+            const dayAfter = new Date(today.getTime() + 172800000);
 
             allBookings = [
                 { id: 1001, name: "Emma Watson", phone: "+447000000001", service: "Wash / Blow Dry", date: tomorrow.toISOString().split('T')[0], time: "12:00", status: "active" },
@@ -716,45 +701,37 @@
             localStorage.setItem("hb_backup", JSON.stringify(allBookings));
         }
 
-        // ---------- REFRESH ADMIN UI (Main Fix) ----------
+        // ---------- REFRESH ----------
         async function refreshAdminUI() {
-            const refreshBtn = document.getElementById("refreshBtn");
-            if (refreshBtn) {
-                refreshBtn.disabled = true;
-                refreshBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Refreshing...`;
+            const btn = document.getElementById("refreshBtn");
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Refreshing...`;
             }
 
             await fetchBookings();
 
             // Update Stats
             const todayStr = new Date().toISOString().split('T')[0];
-            const todayActive = allBookings.filter(b => b.date === todayStr && b.status === "active").length;
-            const monthlyRevenue = allBookings
-                .filter(b => b.status === "active")
-                .reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
-
-            document.getElementById("stat-today").innerText = todayActive;
-            document.getElementById("stat-revenue").innerText = `£${monthlyRevenue}`;
+            document.getElementById("stat-today").innerText = allBookings.filter(b => b.date === todayStr && b.status === "active").length;
+            document.getElementById("stat-revenue").innerText = "£" + allBookings.filter(b => b.status === "active").reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
             document.getElementById("stat-active").innerText = allBookings.filter(b => b.status === "active").length;
             document.getElementById("stat-total").innerText = allBookings.length;
 
-            // Update Table, Chart & Calendar
             renderBookingsTable();
             updateServiceChart();
             renderCalendar();
 
-            // Reset button
-            if (refreshBtn) {
-                refreshBtn.disabled = false;
-                refreshBtn.innerHTML = `<i class="fas fa-sync-alt"></i> Refresh Bookings`;
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-sync-alt"></i> Refresh Bookings`;
             }
         }
 
-        // ---------- RENDER TABLE ----------
+        // ---------- RENDER TABLE (with Delete button) ----------
         function renderBookingsTable() {
             const tbody = document.getElementById("adminTableBody");
             if (!tbody) return;
-
             tbody.innerHTML = "";
 
             const sorted = [...allBookings].sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -762,78 +739,39 @@
             sorted.forEach(b => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                <td><strong>${escapeHtml(b.name || '')}</strong><br><small>${b.phone || ''}</small></td>
-                <td>${b.service || ''}</td>
-                <td>${b.date || ''}<br><span class="text-gold">${b.time || ''}</span></td>
-                <td><span class="badge ${b.status === 'active' ? 'bg-success' : 'bg-danger'}">${b.status || 'unknown'}</span></td>
-                <td>
-                    ${b.status === 'active' ?
-                        `<button class="btn btn-sm btn-danger" onclick="cancelBookingById(${b.id})">Cancel</button>` :
+                    <td><strong>${escapeHtml(b.name || '')}</strong><br><small>${b.phone || ''}</small></td>
+                    <td>${b.service || ''}</td>
+                    <td>${b.date || ''}<br><span class="text-gold">${b.time || ''}</span></td>
+                    <td><span class="badge ${b.status === 'active' ? 'bg-success' : 'bg-danger'}">${b.status || 'unknown'}</span></td>
+                    <td>
+                        ${b.status === 'active' ?
+                        `<button class="btn btn-sm btn-warning me-1" onclick="cancelBookingById(${b.id})">Cancel</button>
+                             <button class="btn btn-sm btn-danger" onclick="deleteBooking(${b.id})"><i class="fas fa-trash"></i> Delete</button>` :
                         '—'}
-                </td>
-            `;
+                    </td>
+                `;
                 tbody.appendChild(tr);
             });
         }
 
-        // ---------- CHART ----------
-        function updateServiceChart() {
-            const ctx = document.getElementById("serviceChart")?.getContext("2d");
-            if (!ctx) return;
+        // ---------- DELETE BOOKING ----------
+        async function deleteBooking(bookingId) {
+            if (!confirm("Permanently delete this booking? This action cannot be undone.")) return;
 
-            const counts = { "Wash / Blow Dry": 0, "Hair Dye / Colouring": 0, "Styling": 0, "Hair Ups": 0 };
-            allBookings.forEach(b => {
-                if (counts[b.service] !== undefined) counts[b.service]++;
-            });
-
-            if (serviceChart) serviceChart.destroy();
-
-            serviceChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(counts),
-                    datasets: [{
-                        label: 'Bookings',
-                        data: Object.values(counts),
-                        backgroundColor: '#d4af37'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true
-                }
-            });
-        }
-
-        // ---------- CALENDAR ----------
-        function renderCalendar() {
-            const container = document.getElementById("calendarDays");
-            if (!container) return;
-
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth();
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            let html = "";
-            for (let i = 0; i < firstDay; i++) html += `<div class="cal-day"></div>`;
-
-            for (let d = 1; d <= daysInMonth; d++) {
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const hasBooking = allBookings.some(b => b.date === dateStr && b.status === "active");
-                html += `<div class="cal-day ${hasBooking ? 'has-booking' : ''}">${d}${hasBooking ? ' ✨' : ''}</div>`;
+            try {
+                await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" });
+            } catch (e) {
+                console.error("Delete failed", e);
             }
 
-            container.innerHTML = html;
+            // Remove from local array
+            allBookings = allBookings.filter(b => b.id !== bookingId);
+            saveBookingsLocal();
 
-            const monthYear = document.getElementById("calendarMonthYear");
-            if (monthYear) {
-                monthYear.innerHTML = `<h5 class="text-gold">${today.toLocaleString('default', { month: 'long', year: 'numeric' })}</h5>`;
-            }
+            refreshAdminUI();
         }
 
-        // ---------- CANCEL BOOKING ----------
+        // ---------- CANCEL (soft delete) ----------
         async function cancelBookingById(bookingId) {
             if (!confirm("Cancel this booking?")) return;
 
@@ -846,24 +784,11 @@
                 } catch (e) { }
             }
 
-            await refreshAdminUI();
+            refreshAdminUI();
         }
 
-        // ---------- OTHER FUNCTIONS ----------
         function escapeHtml(str) {
-            return String(str).replace(/[&<>"']/g, function (m) {
-                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
-            });
-        }
-
-        function exportCSV() {
-            let csv = [["ID", "Name", "Phone", "Service", "Date", "Time", "Status"]];
-            allBookings.forEach(b => csv.push([b.id, b.name, b.phone, b.service, b.date, b.time, b.status]));
-            const blob = new Blob([csv.map(row => row.join(",")).join("\n")], { type: "text/csv" });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "hairbybeau_bookings.csv";
-            a.click();
+            return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
         }
 
         // ---------- ADMIN LOGIN ----------
@@ -873,8 +798,7 @@
         }
 
         function attemptLogin() {
-            const pwd = document.getElementById("adminPassword").value.trim();
-            if (pwd === ADMIN_CODE) {
+            if (document.getElementById("adminPassword").value === ADMIN_CODE) {
                 document.getElementById("admin-dashboard").classList.remove("d-none");
                 bootstrap.Modal.getInstance(document.getElementById("loginModal")).hide();
                 refreshAdminUI();
@@ -893,23 +817,101 @@
             if (section === "calendar") renderCalendar();
         }
 
+        // ---------- CLIENT BOOKING ----------
+        async function submitBooking(e) {
+            e.preventDefault();
+            const name = document.getElementById("customer-name").value.trim();
+            const phone = document.getElementById("customer-phone").value.trim();
+            const service = document.getElementById("service-select").value;
+            const date = document.getElementById("booking-date").value;
+            const time = document.getElementById("booking-time").value;
+
+            if (!name || !phone || !service || !date || !time) {
+                setBookingMsg("Please fill all fields", "error");
+                return;
+            }
+
+            setBookingMsg("Processing...", "info");
+
+            try {
+                const res = await fetch(`${API_BASE}/create-checkout-session`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, phone, service, date, time })
+                });
+                const data = await res.json();
+                if (data.url) window.location.href = data.url;
+                else throw new Error();
+            } catch (err) {
+                if (confirm("Payment service offline. Save as test booking?")) {
+                    const newBooking = { name, phone, service, date, time, status: "active", id: Date.now() };
+                    allBookings.push(newBooking);
+                    saveBookingsLocal();
+                    setBookingMsg("✅ Test booking saved!", "success");
+                    document.getElementById("booking-form").reset();
+                    if (!document.getElementById("admin-dashboard").classList.contains("d-none")) refreshAdminUI();
+                } else {
+                    setBookingMsg("Booking failed. Please try again later.", "error");
+                }
+            }
+        }
+
+        function setBookingMsg(msg, type) {
+            const el = document.getElementById("booking-message");
+            if (el) {
+                el.className = `mt-3 small text-center ${type === "error" ? "text-danger" : "text-success"}`;
+                el.innerText = msg;
+                setTimeout(() => el.innerText = "", 5000);
+            }
+        }
+
+        function populateAvailableDates() {
+            const select = document.getElementById("booking-date");
+            if (!select) return;
+            select.innerHTML = `<option value="">Choose a date</option>`;
+            const today = new Date();
+            for (let i = 0; i < 60; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                if (openingHours[d.getDay()]) {
+                    const opt = document.createElement("option");
+                    opt.value = d.toISOString().split('T')[0];
+                    opt.textContent = d.toLocaleDateString("en-GB", { weekday: 'short', day: 'numeric', month: 'short' });
+                    select.appendChild(opt);
+                }
+            }
+        }
+
+        function populateAvailableTimes() {
+            const date = document.getElementById("booking-date").value;
+            const select = document.getElementById("booking-time");
+            if (!select) return;
+
+            select.innerHTML = `<option value="">Choose a time</option>`;
+            select.disabled = true;
+            if (!date) return;
+
+            const day = new Date(date).getDay();
+            const times = openingHours[day] || [];
+            const booked = allBookings.filter(b => b.date === date && b.status === "active").map(b => b.time);
+
+            times.forEach(t => {
+                if (!booked.includes(t)) {
+                    const opt = document.createElement("option");
+                    opt.value = t;
+                    opt.textContent = t;
+                    select.appendChild(opt);
+                }
+            });
+            select.disabled = false;
+        }
+
         // ---------- INIT ----------
         document.addEventListener("DOMContentLoaded", async () => {
             await fetchBookings();
-
             populateAvailableDates();
             document.getElementById("booking-form").addEventListener("submit", submitBooking);
             document.getElementById("booking-date").addEventListener("change", populateAvailableTimes);
-
-            // Add Export CSV button if admin header exists
-            const adminHeader = document.querySelector("#admin-dashboard .d-flex.justify-content-between.align-items-center div");
-            if (adminHeader) {
-                const exportBtn = document.createElement("button");
-                exportBtn.className = "btn btn-outline-warning me-2";
-                exportBtn.innerHTML = `<i class="fas fa-download"></i> Export CSV`;
-                exportBtn.onclick = exportCSV;
-                adminHeader.appendChild(exportBtn);
-            }
         });
     </script>
 </body>
