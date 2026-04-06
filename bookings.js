@@ -1,4 +1,4 @@
-// bookings.js
+// bookings.js - Minimal & Fixed Version
 let allBookings = [];
 
 function loadBookings() {
@@ -61,6 +61,7 @@ function exportBookingsAsJS() {
     URL.revokeObjectURL(url);
 }
 
+// Make available globally
 window.loadBookings = loadBookings;
 window.saveBookings = saveBookings;
 window.addBooking = addBooking;
