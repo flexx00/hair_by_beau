@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const twilio = require("twilio");
 const Stripe = require("stripe");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
 app.use(cors());
@@ -10,7 +12,6 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 // ================= BASE URL =================
-// 🔥 Uses your custom domain automatically
 const BASE_URL =
     process.env.NODE_ENV === "production"
         ? "https://hairbybeau.com"
@@ -22,7 +23,6 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 // ================= KEYS =================
-// ⚠️ Move to ENV later for security
 const stripe = Stripe("sk_test_51TBKY3QtbyUXSAuNXQEUpjGHVw4qyJxhADuJ8I4LSlqdBUExEYZuGrbBL8HEGSPLF9kGSQgDBMgYwizDm5FQcikt00fyJ0pB1u");
 const endpointSecret = "whsec_pVUpdXbT0IDspBBe7R4VUDP74JMsFRAE";
 
@@ -33,8 +33,26 @@ const client = twilio(
 
 const twilioNumber = "+447460963690";
 
-// ================= TEMP STORAGE =================
-let bookings = [];
+// ================= FILE STORAGE =================
+const bookingsFilePath = path.join(__dirname, "bookings.json");
+
+// Load bookings from file
+function loadBookingsFromFile() {
+    try {
+        const data = fs.readFileSync(bookingsFilePath, "utf8");
+        return JSON.parse(data);
+    } catch (err) {
+        return [];
+    }
+}
+
+// Save bookings to file
+function saveBookingsToFile(bookings) {
+    fs.writeFileSync(bookingsFilePath, JSON.stringify(bookings, null, 2));
+}
+
+// Initialize bookings from file
+let bookings = loadBookingsFromFile();
 
 // ================= PRICE =================
 function getPrice(service) {
@@ -81,6 +99,42 @@ async function sendSMS({ phone, name, service, date, time }) {
     }
 }
 
+// ================= BOOKINGS API =================
+// Get all bookings
+app.get("/bookings", (req, res) => {
+    res.json(bookings);
+});
+
+// Add a new booking
+app.post("/bookings", (req, res) => {
+    const booking = req.body;
+    if (!booking.id) booking.id = Date.now();
+    if (!booking.status) booking.status = "active";
+    bookings.push(booking);
+    saveBookingsToFile(bookings);
+    res.status(201).json(booking);
+});
+
+// Update a booking
+app.put("/bookings/:id", (req, res) => {
+    const bookingId = parseInt(req.params.id);
+    const bookingIndex = bookings.findIndex((b) => b.id === bookingId);
+    if (bookingIndex === -1) {
+        return res.status(404).json({ error: "Booking not found" });
+    }
+    bookings[bookingIndex] = { ...bookings[bookingIndex], ...req.body };
+    saveBookingsToFile(bookings);
+    res.json(bookings[bookingIndex]);
+});
+
+// Delete a booking
+app.delete("/bookings/:id", (req, res) => {
+    const bookingId = parseInt(req.params.id);
+    bookings = bookings.filter((b) => b.id !== bookingId);
+    saveBookingsToFile(bookings);
+    res.status(204).end();
+});
+
 // ================= CREATE CHECKOUT =================
 app.post("/create-checkout-session", async (req, res) => {
     const { name, phone, service, date, time } = req.body;
@@ -104,7 +158,6 @@ app.post("/create-checkout-session", async (req, res) => {
                 },
             ],
 
-            // ✅ FIXED URL (THIS WAS YOUR MAIN ISSUE)
             success_url: `${BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${BASE_URL}`,
 
@@ -154,11 +207,14 @@ app.post("/webhook", (req, res) => {
 
         console.log("💳 PAYMENT SUCCESS:", booking);
 
-        bookings.push({
+        const newBooking = {
             id: Date.now(),
             ...booking,
             status: "active",
-        });
+        };
+
+        bookings.push(newBooking);
+        saveBookingsToFile(bookings);
 
         // ✅ SMS sent AFTER payment success
         sendSMS(booking);
