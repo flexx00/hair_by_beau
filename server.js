@@ -192,12 +192,12 @@ app.delete("/book/:id", (req, res) => {
     res.json({ success: true });
 });
 
-// ================= TEST BOOKING =================
-app.post("/test-booking", (req, res) => {
+// ================= TEST BOOKING (WITH SMS) =================
+app.post("/test-booking", async (req, res) => {
     const test = {
         id: Date.now(),
         name: "Test User",
-        phone: "+447932355630",
+        phone: "+447932355630", // change to your number
         service: "Wash / Blow Dry",
         date: "2026-04-10",
         time: "12:00",
@@ -205,6 +205,13 @@ app.post("/test-booking", (req, res) => {
     };
 
     bookings.push(test);
+
+    try {
+        await sendSMS(test);
+        console.log("✅ Test booking SMS sent");
+    } catch (err) {
+        console.error("❌ Test booking SMS failed:", err.message);
+    }
 
     res.json({ success: true, booking: test });
 });
