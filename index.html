@@ -325,7 +325,6 @@
             </div>
 
             <div class="row g-5">
-                <!-- Contact Info -->
                 <div class="col-lg-5 col-xl-4" data-aos="fade-right">
                     <div
                         class="contact-info bg-charcoal p-4 p-lg-5 rounded shadow border border-gold border-opacity-25 h-100">
@@ -367,7 +366,6 @@
                     </div>
                 </div>
 
-                <!-- Booking Form -->
                 <div class="col-lg-7" data-aos="fade-left">
                     <div
                         class="appointment-form bg-charcoal p-4 p-lg-5 rounded shadow-lg border border-gold border-opacity-25">
@@ -485,7 +483,9 @@
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="adminTableBody"></tbody>
+                                            <tbody id="adminTableBody">
+                                                <!-- Bookings will be populated here -->
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -589,6 +589,7 @@
 
             await fetchBookings();
 
+            // Update Stats
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById("stat-today").innerText = allBookings.filter(b => b.date === todayStr && b.status === "active").length;
             document.getElementById("stat-revenue").innerText = "£" + allBookings.filter(b => b.status === "active").reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
@@ -609,6 +610,11 @@
             const tbody = document.getElementById("adminTableBody");
             if (!tbody) return;
             tbody.innerHTML = "";
+
+            if (allBookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No bookings found</td></tr>`;
+                return;
+            }
 
             const sorted = [...allBookings].sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -631,7 +637,7 @@
         }
 
         async function deleteBooking(bookingId) {
-            if (!confirm("Permanently delete this booking?")) return;
+            if (!confirm("Permanently delete this booking? This cannot be undone.")) return;
             try {
                 await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" });
             } catch (e) { }
@@ -680,6 +686,7 @@
             if (section === "calendar") renderCalendar();
         }
 
+        // Client booking functions
         async function submitBooking(e) {
             e.preventDefault();
             const name = document.getElementById("customer-name").value.trim();
