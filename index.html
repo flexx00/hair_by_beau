@@ -39,6 +39,18 @@
             scroll-behavior: smooth;
         }
 
+        .text-gold {
+            color: var(--gold) !important;
+        }
+
+        .bg-charcoal {
+            background-color: var(--charcoal);
+        }
+
+        .card-gold-border {
+            border: 1px solid var(--border-gold);
+        }
+
         .navbar {
             background: rgba(15, 10, 13, 0.98);
             backdrop-filter: blur(12px);
@@ -547,6 +559,36 @@
             "Hair Ups": 20
         };
 
+        // Local Storage for Bookings
+        function getAllBookings() {
+            return JSON.parse(localStorage.getItem("bookings") || "[]");
+        }
+
+        function addBooking(booking) {
+            const bookings = getAllBookings();
+            booking.id = Date.now();
+            bookings.push(booking);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+        }
+
+        function cancelBooking(id) {
+            const bookings = getAllBookings();
+            const index = bookings.findIndex(b => b.id === id);
+            if (index !== -1) {
+                bookings[index].status = "cancelled";
+                localStorage.setItem("bookings", JSON.stringify(bookings));
+            }
+        }
+
+        function deleteBooking(id) {
+            const bookings = getAllBookings().filter(b => b.id !== id);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+        }
+
+        function loadBookings() {
+            return getAllBookings();
+        }
+
         async function fetchBookings() {
             try {
                 const res = await fetch(`${API_BASE}/bookings`);
@@ -613,8 +655,42 @@
         }
 
         function renderCalendar() {
-            // Placeholder to prevent errors
-            console.log("Calendar render called");
+            const now = new Date();
+            const month = now.getMonth();
+            const year = now.getFullYear();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById("calendarMonthYear").innerText = `${monthNames[month]} ${year}`;
+
+            const header = document.getElementById("calendarHeader");
+            header.innerHTML = "";
+            ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(day => {
+                const div = document.createElement("div");
+                div.className = "cal-day-header";
+                div.innerText = day;
+                header.appendChild(div);
+            });
+
+            const days = document.getElementById("calendarDays");
+            days.innerHTML = "";
+
+            for (let i = 0; i < firstDay; i++) {
+                const div = document.createElement("div");
+                div.className = "cal-day";
+                days.appendChild(div);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const div = document.createElement("div");
+                div.className = "cal-day";
+                div.innerText = i;
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const bookings = getAllBookings().filter(b => b.date === dateStr && b.status === "active");
+                if (bookings.length > 0) div.classList.add("has-booking");
+                days.appendChild(div);
+            }
         }
 
         function escapeHtml(str) {
