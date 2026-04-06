@@ -9,6 +9,13 @@ app.use(cors());
 // ================= PORT =================
 const PORT = process.env.PORT || 3000;
 
+// ================= BASE URL =================
+// 🔥 Uses your custom domain automatically
+const BASE_URL =
+    process.env.NODE_ENV === "production"
+        ? "https://hairbybeau.com"
+        : "http://localhost:3000";
+
 // ================= MIDDLEWARE =================
 app.use("/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
@@ -96,8 +103,11 @@ app.post("/create-checkout-session", async (req, res) => {
                     quantity: 1,
                 },
             ],
+
+            // ✅ FIXED URL (THIS WAS YOUR MAIN ISSUE)
             success_url: `${BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${BASE_URL}`,
+
             metadata: { name, phone, service, date, time },
         });
 
@@ -150,6 +160,7 @@ app.post("/webhook", (req, res) => {
             status: "active",
         });
 
+        // ✅ SMS sent AFTER payment success
         sendSMS(booking);
     }
 
