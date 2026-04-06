@@ -1,20 +1,16 @@
-// bookings.js - Hair By Beau Bookings System (Fixed & Improved)
-
+// bookings.js
 let allBookings = [];
 
-// Load bookings from localStorage
 function loadBookings() {
     const cached = localStorage.getItem("hb_bookings");
     allBookings = cached ? JSON.parse(cached) : [];
     return allBookings;
 }
 
-// Save bookings
 function saveBookings() {
     localStorage.setItem("hb_bookings", JSON.stringify(allBookings));
 }
 
-// Add new booking
 function addBooking(booking) {
     if (!booking.id) booking.id = Date.now();
     if (!booking.status) booking.status = "active";
@@ -23,14 +19,14 @@ function addBooking(booking) {
     return booking;
 }
 
-// Delete booking permanently
 function deleteBooking(bookingId) {
+    if (!confirm("Delete this booking permanently?")) return;
     allBookings = allBookings.filter(b => b.id !== bookingId);
     saveBookings();
 }
 
-// Cancel booking
 function cancelBooking(bookingId) {
+    if (!confirm("Cancel this booking?")) return;
     const booking = allBookings.find(b => b.id === bookingId);
     if (booking) {
         booking.status = "cancelled";
@@ -38,16 +34,13 @@ function cancelBooking(bookingId) {
     }
 }
 
-// Get all bookings
 function getAllBookings() {
     return [...allBookings];
 }
 
-// Export as bookings.js file
 function exportBookingsAsJS() {
     const date = new Date().toLocaleString();
     const data = JSON.stringify(allBookings, null, 4);
-    
     const content = `// bookings.js - Exported on ${date}\n\nlet allBookings = ${data};\n\n` +
         `function loadBookings() { return allBookings; }\n` +
         `function saveBookings() { console.log("Saved"); }\n` +
@@ -68,7 +61,6 @@ function exportBookingsAsJS() {
     URL.revokeObjectURL(url);
 }
 
-// Make functions global
 window.loadBookings = loadBookings;
 window.saveBookings = saveBookings;
 window.addBooking = addBooking;

@@ -533,7 +533,6 @@
 
         const API_BASE = "https://hair-by-beau.onrender.com";
         const ADMIN_CODE = "beau2026";
-        let serviceChart = null;
 
         const openingHours = {
             2: ["12:00", "13:00", "14:00", "15:00"],
@@ -613,6 +612,11 @@
             });
         }
 
+        function renderCalendar() {
+            // Placeholder - prevents errors if called
+            console.log("Calendar render called");
+        }
+
         function escapeHtml(str) {
             return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
         }
@@ -639,6 +643,7 @@
         function showSection(section) {
             document.getElementById("section-overview").classList.toggle("d-none", section !== "overview");
             document.getElementById("section-calendar").classList.toggle("d-none", section !== "calendar");
+            if (section === "calendar") renderCalendar();
         }
 
         async function submitBooking(e) {
@@ -671,7 +676,6 @@
                 console.warn("Payment service offline - saving locally");
             }
 
-            // Save booking using bookings.js
             const newBooking = { name, phone, service, date, time, status: "active" };
             addBooking(newBooking);
 
@@ -732,7 +736,7 @@
 
         // Initialize
         document.addEventListener("DOMContentLoaded", async () => {
-            await fetchBookings();           // Starts empty
+            await fetchBookings();
             populateAvailableDates();
             document.getElementById("booking-form").addEventListener("submit", submitBooking);
             document.getElementById("booking-date").addEventListener("change", populateAvailableTimes);
