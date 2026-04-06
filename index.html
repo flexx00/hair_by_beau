@@ -23,7 +23,6 @@
             --deep-pink: #e89ab8;
             --dark: #111;
             --charcoal: #1a1a1a;
-            --light-pink: rgba(248, 200, 220, 0.15);
             --border-gold: rgba(212, 175, 55, 0.35);
         }
 
@@ -40,7 +39,6 @@
             scroll-behavior: smooth;
         }
 
-        /* Navbar - Pink & Gold Luxury */
         .navbar {
             background: rgba(15, 10, 13, 0.98);
             backdrop-filter: blur(12px);
@@ -53,14 +51,11 @@
             font-size: 2rem;
             font-weight: 700;
             color: var(--gold) !important;
-            letter-spacing: 1px;
         }
 
         .nav-link {
             color: #fff !important;
             font-weight: 500;
-            margin: 0 0.6rem;
-            transition: all 0.3s ease;
         }
 
         .nav-link:hover,
@@ -68,11 +63,9 @@
             color: var(--pink) !important;
         }
 
-        /* Hero - Romantic Pink & Gold */
         .hero {
             min-height: 92vh;
-            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)),
-                url('https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)), url('https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
             background-position: center;
             display: flex;
@@ -86,15 +79,8 @@
             font-weight: 700;
             font-family: 'Playfair Display', serif;
             color: var(--gold);
-            text-shadow: 0 4px 20px rgba(248, 200, 220, 0.3);
         }
 
-        .hero-content p {
-            color: var(--pink);
-            font-size: 1.25rem;
-        }
-
-        /* Buttons */
         .btn-primary-custom {
             background: linear-gradient(135deg, var(--gold), var(--soft-gold));
             color: #111;
@@ -102,15 +88,6 @@
             border-radius: 50px;
             font-weight: 600;
             transition: all 0.4s ease;
-            border: none;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .btn-primary-custom:hover {
-            background: linear-gradient(135deg, #c19b2e, var(--gold));
-            transform: translateY(-4px) scale(1.03);
-            color: #111;
-            box-shadow: 0 8px 25px rgba(248, 200, 220, 0.4);
         }
 
         .btn-outline-custom {
@@ -119,67 +96,12 @@
             padding: 14px 36px;
             border-radius: 50px;
             font-weight: 600;
-            background: transparent;
-            transition: all 0.4s ease;
         }
 
-        .btn-outline-custom:hover {
-            background: var(--pink);
-            color: #111;
-            border-color: var(--pink);
-        }
-
-        .text-gold {
-            color: var(--gold);
-        }
-
-        .text-pink {
-            color: var(--pink);
-        }
-
-        .bg-charcoal {
-            background: var(--charcoal);
-        }
-
-        .card-gold-border {
-            border: 1px solid var(--border-gold);
-            transition: all 0.4s ease;
-        }
-
-        .card-gold-border:hover {
-            border-color: var(--pink);
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(248, 200, 220, 0.2);
-        }
-
-        .price-display {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--gold);
-        }
-
-        /* Form & Input Styling */
-        .form-control,
-        .form-select {
-            background: #2a1f24;
-            border: 1px solid var(--border-gold);
-            color: white;
-            border-radius: 12px;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--pink);
-            box-shadow: 0 0 0 0.2rem rgba(248, 200, 220, 0.25);
-            background: #2a1f24;
-        }
-
-        /* Admin Dashboard - Pink & Gold Luxury */
         .glass-panel {
             background: rgba(26, 20, 24, 0.95);
             border-radius: 20px;
             border: 1px solid var(--border-gold);
-            backdrop-filter: blur(10px);
         }
 
         .stat-card {
@@ -188,22 +110,6 @@
             border-radius: 16px;
             padding: 20px;
             text-align: center;
-            transition: 0.3s;
-        }
-
-        .stat-card:hover {
-            border-color: var(--pink);
-            transform: translateY(-5px);
-        }
-
-        .stat-card h6 {
-            color: #ddd;
-            font-size: 14px;
-        }
-
-        .stat-card h2 {
-            color: var(--gold);
-            margin: 8px 0 0;
         }
 
         .calendar-grid {
@@ -223,33 +129,12 @@
             padding: 14px 8px;
             text-align: center;
             border-radius: 12px;
-            transition: all 0.3s ease;
         }
 
         .cal-day.has-booking {
             background: linear-gradient(135deg, var(--pink), #f4a6c8);
             color: #111;
             font-weight: 600;
-        }
-
-        .btn-gold {
-            background: var(--gold);
-            color: #111;
-            font-weight: 600;
-        }
-
-        .btn-gold:hover {
-            background: #c19b2e;
-        }
-
-        .gallery-img {
-            transition: 0.4s ease;
-            border-radius: 16px;
-        }
-
-        .gallery-img:hover {
-            transform: scale(1.06);
-            box-shadow: 0 15px 35px rgba(248, 200, 220, 0.25);
         }
     </style>
 </head>
@@ -260,8 +145,7 @@
         <div class="container">
             <a class="navbar-brand" href="#">Hair By Beau</a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
+                data-bs-target="#navbarSupportedContent">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -328,7 +212,6 @@
         </div>
     </section>
 
-    <!-- Photos Section -->
     <section id="photos" class="py-5 bg-dark">
         <div class="container">
             <h2 class="text-center text-gold mb-5" data-aos="fade-up">My Work</h2>
@@ -546,13 +429,11 @@
                     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                         <h2 class="text-gold">Salon Dashboard</h2>
                         <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-outline-light me-2" onclick="showSection('overview')">
-                                <i class="fas fa-chart-bar"></i> Overview
-                            </button>
-                            <button class="btn btn-outline-light me-2" onclick="showSection('calendar')">
-                                <i class="fas fa-calendar"></i> Calendar
-                            </button>
-                            <button class="btn btn-outline-success me-2" id="refreshBtn" onclick="refreshAdminUI()">
+                            <button class="btn btn-outline-light" onclick="showSection('overview')"><i
+                                    class="fas fa-chart-bar"></i> Overview</button>
+                            <button class="btn btn-outline-light" onclick="showSection('calendar')"><i
+                                    class="fas fa-calendar"></i> Calendar</button>
+                            <button class="btn btn-outline-success" id="refreshBtn" onclick="refreshAdminUI()">
                                 <i class="fas fa-sync-alt"></i> Refresh Bookings
                             </button>
                             <button class="btn btn-outline-light" onclick="logoutAdmin()">Logout</button>
@@ -648,7 +529,6 @@
     <script>
         AOS.init({ duration: 800, once: true });
 
-        // ---------- CONFIG ----------
         const API_BASE = "https://hair-by-beau.onrender.com";
         const ADMIN_CODE = "beau2026";
         let allBookings = [];
@@ -667,7 +547,6 @@
             "Hair Ups": 20
         };
 
-        // ---------- FETCH & STORAGE ----------
         async function fetchBookings() {
             try {
                 const res = await fetch(`${API_BASE}/bookings`);
@@ -701,7 +580,6 @@
             localStorage.setItem("hb_backup", JSON.stringify(allBookings));
         }
 
-        // ---------- REFRESH ----------
         async function refreshAdminUI() {
             const btn = document.getElementById("refreshBtn");
             if (btn) {
@@ -711,7 +589,6 @@
 
             await fetchBookings();
 
-            // Update Stats
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById("stat-today").innerText = allBookings.filter(b => b.date === todayStr && b.status === "active").length;
             document.getElementById("stat-revenue").innerText = "£" + allBookings.filter(b => b.status === "active").reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
@@ -728,7 +605,6 @@
             }
         }
 
-        // ---------- RENDER TABLE (with Delete button) ----------
         function renderBookingsTable() {
             const tbody = document.getElementById("adminTableBody");
             if (!tbody) return;
@@ -754,36 +630,24 @@
             });
         }
 
-        // ---------- DELETE BOOKING ----------
         async function deleteBooking(bookingId) {
-            if (!confirm("Permanently delete this booking? This action cannot be undone.")) return;
-
+            if (!confirm("Permanently delete this booking?")) return;
             try {
                 await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" });
-            } catch (e) {
-                console.error("Delete failed", e);
-            }
-
-            // Remove from local array
+            } catch (e) { }
             allBookings = allBookings.filter(b => b.id !== bookingId);
             saveBookingsLocal();
-
             refreshAdminUI();
         }
 
-        // ---------- CANCEL (soft delete) ----------
         async function cancelBookingById(bookingId) {
             if (!confirm("Cancel this booking?")) return;
-
             const index = allBookings.findIndex(b => b.id == bookingId);
             if (index !== -1) {
                 allBookings[index].status = "cancelled";
                 saveBookingsLocal();
-                try {
-                    await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" });
-                } catch (e) { }
+                try { await fetch(`${API_BASE}/book/${bookingId}`, { method: "DELETE" }); } catch (e) { }
             }
-
             refreshAdminUI();
         }
 
@@ -791,7 +655,6 @@
             return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
         }
 
-        // ---------- ADMIN LOGIN ----------
         function checkAdminAccess() {
             const modal = new bootstrap.Modal(document.getElementById("loginModal"));
             modal.show();
@@ -817,7 +680,6 @@
             if (section === "calendar") renderCalendar();
         }
 
-        // ---------- CLIENT BOOKING ----------
         async function submitBooking(e) {
             e.preventDefault();
             const name = document.getElementById("customer-name").value.trim();
@@ -906,7 +768,7 @@
             select.disabled = false;
         }
 
-        // ---------- INIT ----------
+        // Initialize
         document.addEventListener("DOMContentLoaded", async () => {
             await fetchBookings();
             populateAvailableDates();
