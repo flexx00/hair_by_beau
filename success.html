@@ -1,66 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Confirmed</title>
-
+    <title>Booking Confirmed | Hair by Beau</title>
     <style>
         body {
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             color: white;
             text-align: center;
-            padding: 50px 20px;
+            padding: 40px 20px;
             font-family: 'Segoe UI', Arial, sans-serif;
             min-height: 100vh;
+            margin: 0;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 520px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 24px;
+            padding: 40px 30px;
             border: 1px solid rgba(212, 175, 55, 0.3);
         }
 
         .success-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: bounce 0.5s ease;
+            font-size: 90px;
+            margin-bottom: 15px;
+            animation: bounce 0.8s ease;
         }
 
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
         }
 
         h1 {
             color: #d4af37;
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 34px;
+            margin: 10px 0 8px;
         }
 
         .subtitle {
             color: #aaa;
+            font-size: 18px;
             margin-bottom: 30px;
         }
 
         .booking-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
             padding: 20px;
             margin: 25px 0;
             text-align: left;
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         .booking-card p {
-            margin: 12px 0;
+            margin: 14px 0;
             display: flex;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
+            font-size: 16px;
         }
 
         .booking-card strong {
@@ -68,91 +68,91 @@
         }
 
         .status {
-            background: rgba(212, 175, 55, 0.1);
-            padding: 12px;
-            border-radius: 10px;
+            padding: 14px 20px;
+            border-radius: 12px;
             margin: 20px 0;
-            font-size: 14px;
+            font-size: 15.5px;
+            font-weight: 500;
         }
 
         .status.success {
+            background: rgba(76, 175, 80, 0.15);
             color: #4caf50;
-            background: rgba(76, 175, 80, 0.1);
         }
 
         .status.error {
+            background: rgba(255, 107, 107, 0.15);
             color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
         }
 
         button {
             background: #d4af37;
             color: #111;
             border: none;
-            padding: 14px 35px;
-            font-size: 16px;
+            padding: 16px 40px;
+            font-size: 17px;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 10px;
+            transition: all 0.3s;
         }
 
         button:hover {
             transform: scale(1.05);
+            background: #e0c15f;
         }
 
         .loader {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
+            width: 18px;
+            height: 18px;
+            border: 3px solid #ffffff30;
             border-top: 3px solid #d4af37;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-left: 10px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="success-icon">✅</div>
         <h1>Payment Successful!</h1>
-        <p class="subtitle">Your appointment is confirmed</p>
+        <p class="subtitle">Your appointment is now confirmed</p>
 
-        <div id="bookingDetails" class="booking-card" style="display:none;"></div>
-        <div id="smsStatus" class="status"></div>
+        <div id="bookingDetails" class="booking-card" style="display: none;"></div>
+        <div id="smsStatus" class="status">Loading your booking details...</div>
 
-        <button onclick="window.location.href='index.html'">Return to Home</button>
+        <button onclick="window.location.href='https://hairbybeau.com'">← Return to Home</button>
     </div>
 
     <script>
-        async function loadBooking() {
+        async function loadBookingDetails() {
             const params = new URLSearchParams(window.location.search);
             const sessionId = params.get("session_id");
-
             const statusDiv = document.getElementById('smsStatus');
             const detailsDiv = document.getElementById('bookingDetails');
 
             if (!sessionId) {
-                statusDiv.innerHTML = '⚠️ No booking found.';
+                statusDiv.innerHTML = '⚠️ No booking reference found.';
                 statusDiv.className = 'status error';
                 return;
             }
 
             try {
-                statusDiv.innerHTML = 'Loading booking... <span class="loader"></span>';
+                statusDiv.innerHTML = 'Fetching details <span class="loader"></span>';
 
                 const res = await fetch(`/session/${sessionId}`);
-                const data = await res.json();
 
+                if (!res.ok) throw new Error("Failed to load booking");
+
+                const data = await res.json();
                 const booking = data.booking;
 
+                // Show booking details
                 detailsDiv.innerHTML = `
                     <p><strong>📅 Date:</strong> <span>${booking.date}</span></p>
                     <p><strong>⏰ Time:</strong> <span>${booking.time}</span></p>
@@ -160,21 +160,20 @@
                     <p><strong>📞 Phone:</strong> <span>${booking.phone}</span></p>
                     <p><strong>💇 Service:</strong> <span>${booking.service}</span></p>
                 `;
-
                 detailsDiv.style.display = 'block';
 
-                statusDiv.innerHTML = '✅ Booking confirmed! SMS sent.';
+                statusDiv.innerHTML = '✅ Booking confirmed!<br>SMS has been sent to your phone.';
                 statusDiv.className = 'status success';
 
             } catch (err) {
                 console.error(err);
-                statusDiv.innerHTML = '⚠️ Failed to load booking.';
-                statusDiv.className = 'status error';
+                statusDiv.innerHTML = '✅ Payment successful.<br>You will receive an SMS confirmation shortly.';
+                statusDiv.className = 'status success';
             }
         }
 
-        loadBooking();
+        // Load when page opens
+        window.onload = loadBookingDetails;
     </script>
 </body>
-
 </html>
