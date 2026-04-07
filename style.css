@@ -153,15 +153,41 @@ h6 {
     color: var(--silver);
 }
 
-.gallery-img {
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    cursor: pointer;
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 45px;
+    /* 👈 slightly more spacing */
+    max-width: 1200px;
+    /* 👈 wider section */
+    margin: 0 auto;
 }
 
-.gallery-img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+.gallery-item {
+    background: #111;
+    border-radius: 18px;
+    padding: 18px;
+    /* 👈 more breathing room */
+    border: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 580px;
+    /* 👈 PERFECT SWEET SPOT */
+    object-fit: contain;
+    display: block;
+}
+
+/* mobile */
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-item img {
+        height: auto;
+    }
 }
 
 /* ============================================

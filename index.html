@@ -147,18 +147,6 @@
             background-color: var(--bg-dark);
         }
 
-        .gallery-img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
-        }
-
-        .gallery-img:hover {
-            transform: scale(1.03);
-        }
-
         /* Forms */
         .appointment-form,
         .contact-info {
@@ -181,6 +169,43 @@
             border-color: var(--gold);
             color: #fff;
             box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 45px;
+            /* 👈 slightly more spacing */
+            max-width: 1200px;
+            /* 👈 wider section */
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            background: #111;
+            border-radius: 18px;
+            padding: 18px;
+            /* 👈 more breathing room */
+            border: 1px solid rgba(212, 175, 55, 0.25);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 580px;
+            /* 👈 PERFECT SWEET SPOT */
+            object-fit: contain;
+            display: block;
+        }
+
+        /* mobile */
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-item img {
+                height: auto;
+            }
         }
 
         /* Admin Dashboard Styles */
@@ -285,7 +310,7 @@
                         <p>Hair By Beau offers premium grooming experiences for women.</p>
                         <div class="hero-buttons d-flex flex-column flex-sm-row justify-content-center gap-3">
                             <a href="#appointment" class="btn btn-primary-custom">Book Appointment</a>
-                            <a href="#services" class="btn btn-outline-custom">Explore Services</a>
+                            <a href="#photos" class="btn btn-outline-custom">View My Work</a>
                         </div>
                     </div>
                 </div>
@@ -319,13 +344,20 @@
     <!-- Photos Section -->
     <section id="photos" class="photos py-5">
         <div class="container">
-            <h2 class="text-center text-gold mb-5" data-aos="fade-up">My Work</h2>
-            <div class="row g-4">
-                <div class="col-md-4"><img src="images/before-after.png"
-                        class="img-fluid rounded gallery-img"></div>
-                <div class="col-md-4"><img src="images/hairup2.png"
-                        class="img-fluid rounded gallery-img"></div>
+            <h2 class="text-center text-gold mb-5">My Work</h2>
+
+            <div class="gallery-grid">
+
+                <div class="gallery-item">
+                    <img src="images/before-after.png" alt="Before and After">
+                </div>
+
+                <div class="gallery-item">
+                    <img src="images/hairup2.png" alt="Hair Up">
+                </div>
+
             </div>
+        </div>
     </section>
 
     <!-- Services Section -->
@@ -365,7 +397,7 @@
         </div>
     </section>
 
-    <!-- Pricing Section -->
+    <!-- Pricing Section
     <section id="pricing" class="pricing py-5">
         <div class="container">
             <h2 class="text-center text-gold mb-5">Pricing</h2>
@@ -402,7 +434,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <!-- Appointment Section -->
     <section id="appointment" class="appointment py-5">
