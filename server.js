@@ -197,7 +197,7 @@ app.get("/health", (req, res) => {
 
 // ================= IMPORTANT FIX =================
 // 👇 THIS FIXES YOUR 404 + JSON ERROR
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
