@@ -6,31 +6,40 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-app.use(cors());
 
-// ================= PORT =================
+// ================= CONFIG =================
 const PORT = process.env.PORT || 3000;
-
-// ================= BASE URL =================
-const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // ================= MIDDLEWARE =================
+app.use(cors());
+
+// ⚠️ Stripe webhook must be BEFORE json
 app.use("/webhook", express.raw({ type: "application/json" }));
+
 app.use(express.json());
-app.use(express.static(__dirname));
 
 // ================= FILE STORAGE =================
 const BOOKINGS_FILE = path.join(__dirname, "bookings.json");
 
 function loadBookings() {
-    if (fs.existsSync(BOOKINGS_FILE)) {
-        return JSON.parse(fs.readFileSync(BOOKINGS_FILE));
+    try {
+        if (fs.existsSync(BOOKINGS_FILE)) {
+            return JSON.parse(fs.readFileSync(BOOKINGS_FILE));
+        }
+        return [];
+    } catch (err) {
+        console.error("❌ Failed to load bookings:", err);
+        return [];
     }
-    return [];
 }
 
 function saveBookings() {
-    fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2));
+    try {
+        fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2));
+    } catch (err) {
+        console.error("❌ Failed to save bookings:", err);
+    }
 }
 
 let bookings = loadBookings();
@@ -97,8 +106,6 @@ app.post("/create-checkout-session", async (req, res) => {
         if (!name || !phone || !service || !date || !time) {
             return res.status(400).json({ error: "Missing booking data" });
         }
-
-        console.log("📦 Booking request:", req.body);
 
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
@@ -185,8 +192,10 @@ app.get("/bookings", (req, res) => {
 
 app.delete("/bookings/:id", (req, res) => {
     const id = Number(req.params.id);
+
     bookings = bookings.filter(b => b.id !== id);
     saveBookings();
+
     res.json({ success: true });
 });
 
@@ -195,8 +204,11 @@ app.get("/health", (req, res) => {
     res.json({ status: "ok" });
 });
 
-// ================= FIXED CATCH-ALL (NO CRASH) =================
-app.use((req, res) => {
+// ================= STATIC FILES =================
+app.use(express.static(__dirname));
+
+// ================= FRONTEND ROUTE =================
+app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
