@@ -35,7 +35,7 @@ function saveBookings() {
 
 let bookings = loadBookings();
 
-// ================= KEYS (USE ENV ON RENDER) =================
+// ================= KEYS =================
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -195,9 +195,8 @@ app.get("/health", (req, res) => {
     res.json({ status: "ok" });
 });
 
-// ================= IMPORTANT FIX =================
-// 👇 THIS FIXES YOUR 404 + JSON ERROR
-app.get("/*", (req, res) => {
+// ================= FIXED CATCH-ALL (NO CRASH) =================
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
