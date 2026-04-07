@@ -12,10 +12,7 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 // ================= BASE URL =================
-const BASE_URL =
-    process.env.NODE_ENV === "production"
-        ? "https://hairbybeau.com"
-        : "http://localhost:3000";
+const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
 // ================= MIDDLEWARE =================
 app.use("/webhook", express.raw({ type: "application/json" }));
@@ -38,17 +35,16 @@ function saveBookings() {
 
 let bookings = loadBookings();
 
-// ================= KEYS =================
-// ⚠️ Move to ENV later for security
-const stripe = Stripe("sk_test_51TBKY3QtbyUXSAuNXQEUpjGHVw4qyJxhADuJ8I4LSlqdBUExEYZuGrbBL8HEGSPLF9kGSQgDBMgYwizDm5FQcikt00fyJ0pB1u");
-const endpointSecret = "whsec_pVUpdXbT0IDspBBe7R4VUDP74JMsFRAE";
+// ================= KEYS (USE ENV ON RENDER) =================
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 const client = twilio(
-    "AC4598af68d81c78de170b6529d318eda7",
-    "81da45b7bb682348024e4f017671c673"
+    process.env.TWILIO_SID,
+    process.env.TWILIO_AUTH
 );
 
-const twilioNumber = "+447460963690";
+const twilioNumber = process.env.TWILIO_PHONE;
 
 // ================= PRICE =================
 function getPrice(service) {
@@ -81,8 +77,6 @@ async function sendSMS({ phone, name, service, date, time }) {
     try {
         const formattedPhone = formatUKNumber(phone);
 
-        console.log("📩 Sending SMS to:", formattedPhone);
-
         await client.messages.create({
             body: `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}.`,
             from: twilioNumber,
@@ -97,13 +91,15 @@ async function sendSMS({ phone, name, service, date, time }) {
 
 // ================= CREATE CHECKOUT =================
 app.post("/create-checkout-session", async (req, res) => {
-    const { name, phone, service, date, time } = req.body;
-
-    if (!name || !phone || !service || !date || !time) {
-        return res.status(400).json({ error: "Missing booking data" });
-    }
-
     try {
+        const { name, phone, service, date, time } = req.body;
+
+        if (!name || !phone || !service || !date || !time) {
+            return res.status(400).json({ error: "Missing booking data" });
+        }
+
+        console.log("📦 Booking request:", req.body);
+
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
             payment_method_types: ["card"],
@@ -117,24 +113,22 @@ app.post("/create-checkout-session", async (req, res) => {
                     quantity: 1,
                 },
             ],
-
-            // ✅ IMPORTANT: includes session_id for success page
             success_url: `${BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${BASE_URL}`,
-
             metadata: { name, phone, service, date, time },
         });
 
-        console.log("💳 Stripe session created:", session.id);
+        console.log("💳 Stripe session:", session.id);
 
         res.json({ url: session.url });
+
     } catch (err) {
-        console.error("❌ Stripe error:", err.message);
+        console.error("❌ STRIPE ERROR:", err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// ================= GET SESSION (SUCCESS PAGE) =================
+// ================= GET SESSION =================
 app.get("/session/:id", async (req, res) => {
     try {
         const session = await stripe.checkout.sessions.retrieve(req.params.id);
@@ -144,21 +138,22 @@ app.get("/session/:id", async (req, res) => {
         }
 
         res.json({ booking: session.metadata });
+
     } catch (err) {
-        console.error("❌ Session fetch error:", err.message);
+        console.error("❌ Session error:", err);
         res.status(500).json({ error: "Failed to retrieve session" });
     }
 });
 
 // ================= WEBHOOK =================
 app.post("/webhook", (req, res) => {
-    const sig = req.headers["stripe-signature"];
     let event;
 
     try {
+        const sig = req.headers["stripe-signature"];
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
-        console.error("❌ Webhook signature error:", err.message);
+        console.error("❌ Webhook error:", err.message);
         return res.sendStatus(400);
     }
 
@@ -177,31 +172,33 @@ app.post("/webhook", (req, res) => {
         bookings.push(newBooking);
         saveBookings();
 
-        // Send SMS after successful payment
         sendSMS(booking);
     }
 
     res.json({ received: true });
 });
 
-// ================= GET BOOKINGS (ADMIN) =================
+// ================= BOOKINGS =================
 app.get("/bookings", (req, res) => {
     res.json(bookings);
 });
 
-// ================= DELETE BOOKING =================
 app.delete("/bookings/:id", (req, res) => {
     const id = Number(req.params.id);
-
     bookings = bookings.filter(b => b.id !== id);
     saveBookings();
-
     res.json({ success: true });
 });
 
 // ================= HEALTH =================
 app.get("/health", (req, res) => {
     res.json({ status: "ok" });
+});
+
+// ================= IMPORTANT FIX =================
+// 👇 THIS FIXES YOUR 404 + JSON ERROR
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // ================= START =================
