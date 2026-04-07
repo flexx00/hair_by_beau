@@ -86,18 +86,20 @@ async function sendSMS({ phone, name, service, date, time }) {
     try {
         const formattedPhone = formatUKNumber(phone);
 
-        await client.messages.create({
+        console.log("📩 Sending SMS to:", formattedPhone);
+
+        const msg = await client.messages.create({
             body: `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}.`,
             from: twilioNumber,
             to: formattedPhone,
         });
 
-        console.log("✅ SMS SENT");
+        console.log("✅ SMS SENT:", msg.sid);
+
     } catch (err) {
-        console.error("❌ SMS ERROR:", err.message);
+        console.error("❌ SMS ERROR FULL:", err);
     }
 }
-
 // ================= CREATE CHECKOUT =================
 app.post("/create-checkout-session", async (req, res) => {
     try {
@@ -153,7 +155,7 @@ app.get("/session/:id", async (req, res) => {
 });
 
 // ================= WEBHOOK =================
-app.post("/webhook", (req, res) => {
+app.post("/webhook", async (req, res) => {
     let event;
 
     try {
@@ -179,7 +181,7 @@ app.post("/webhook", (req, res) => {
         bookings.push(newBooking);
         saveBookings();
 
-        sendSMS(booking);
+        await sendSMS(booking);
     }
 
     res.json({ received: true });
