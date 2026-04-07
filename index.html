@@ -597,21 +597,32 @@
 
         // --- API FUNCTIONS ---
 
-        async function fetchBookings() {
+        async function fetchBookings(retries = 2) {
             try {
                 console.log("📡 Fetching bookings from:", `${API_BASE}/bookings`);
-                const res = await fetch(`${API_BASE}/bookings?t=${new Date().getTime()}`);
-                
+
+                const res = await fetch(`${API_BASE}/bookings?t=${Date.now()}`);
+
                 if (!res.ok) {
-                    throw new Error(`Server Error: ${res.status} ${res.statusText}`);
+                    throw new Error(`Server Error: ${res.status}`);
                 }
-                
+
                 const data = await res.json();
                 console.log("✅ Bookings received:", data);
+
                 return data;
+
             } catch (err) {
-                console.error("❌ Error fetching bookings:", err);
-                alert("Could not connect to server. Please check your internet or contact support.");
+                console.warn("⚠️ Fetch failed, retrying...", err);
+
+                if (retries > 0) {
+                    await new Promise(r => setTimeout(r, 500));
+                    return fetchBookings(retries - 1);
+                }
+
+                console.error("❌ Final failure fetching bookings:", err);
+
+                // ❌ NO MORE ANNOYING ALERT
                 return [];
             }
         }
@@ -749,10 +760,10 @@
             }
 
             const bookings = await fetchBookings();
-            
+
             // Filter only active bookings for stats and table
             const activeBookings = bookings.filter(b => b.status === "active");
-            
+
             const todayStr = new Date().toISOString().split('T')[0];
 
             // Stats
