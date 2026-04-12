@@ -604,8 +604,10 @@
     <script>
         AOS.init({ duration: 800, once: true });
 
-        // ✅ FIXED: auto-detect domain (works on Render + localhost)
-        const API_BASE = window.location.origin;
+        // --- CONFIGURATION ---
+        // If on localhost, use port 3000. If on Render, use relative path "/" 
+        // which tells the browser to talk to the same domain serving the HTML.
+        const API_BASE = window.location.hostname === 'localhost' ? "http://localhost:3000" : "";
 
         const ADMIN_CODE = "beau2026";
 
@@ -617,63 +619,66 @@
         };
 
         const openingHours = {
-            2: ["12:00", "13:00", "14:00", "15:00"],
-            3: ["10:00", "11:00", "12:00", "13:00", "14:00"],
-            4: ["10:00", "11:00", "12:00", "13:00", "14:00"]
+            2: ["12:00", "13:00", "14:00", "15:00"], // Tue
+            3: ["10:00", "11:00", "12:00", "13:00", "14:00"], // Wed
+            4: ["10:00", "11:00", "12:00", "13:00", "14:00"]  // Thu
         };
 
-        // ================= API =================
+        // --- API FUNCTIONS ---
 
         async function fetchBookings(retries = 2) {
             try {
-                const res = await fetch(`${API_BASE}/bookings`);
+                console.log("📡 Fetching bookings from:", `${API_BASE}/bookings`);
 
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const res = await fetch(`${API_BASE}/bookings?t=${Date.now()}`);
 
-                return await res.json();
+                if (!res.ok) {
+                    throw new Error(`Server Error: ${res.status}`);
+                }
+
+                const data = await res.json();
+                console.log("✅ Bookings received:", data);
+
+                return data;
 
             } catch (err) {
+                console.warn("⚠️ Fetch failed, retrying...", err);
+
                 if (retries > 0) {
                     await new Promise(r => setTimeout(r, 500));
                     return fetchBookings(retries - 1);
                 }
 
-                console.error("❌ Bookings failed:", err);
+                console.error("❌ Final failure fetching bookings:", err);
+
+                // ❌ NO MORE ANNOYING ALERT
                 return [];
             }
         }
 
         async function deleteBookingOnServer(id) {
             if (!confirm("Delete this booking permanently?")) return;
-
             try {
                 await fetch(`${API_BASE}/bookings/${id}`, { method: 'DELETE' });
                 refreshAdminUI();
-            } catch {
+            } catch (err) {
                 alert("Failed to delete booking");
             }
         }
 
-        // ================= BOOKING =================
+        // --- FRONTEND LOGIC ---
 
         function populateAvailableDates() {
             const select = document.getElementById("booking-date");
             select.innerHTML = `<option value="">Choose a date</option>`;
-
             const today = new Date();
-
             for (let i = 0; i < 60; i++) {
                 const d = new Date(today);
                 d.setDate(today.getDate() + i);
-
                 if (openingHours[d.getDay()]) {
                     const opt = document.createElement("option");
                     opt.value = d.toISOString().split('T')[0];
-                    opt.textContent = d.toLocaleDateString("en-GB", {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short'
-                    });
+                    opt.textContent = d.toLocaleDateString("en-GB", { weekday: 'short', day: 'numeric', month: 'short' });
                     select.appendChild(opt);
                 }
             }
@@ -682,10 +687,8 @@
         async function populateAvailableTimes() {
             const date = document.getElementById("booking-date").value;
             const select = document.getElementById("booking-time");
-
             select.innerHTML = `<option value="">Choose a time</option>`;
             select.disabled = true;
-
             if (!date) return;
 
             const bookings = await fetchBookings();
@@ -704,28 +707,23 @@
                     select.appendChild(opt);
                 }
             });
-
             select.disabled = false;
         }
 
         async function submitBooking(e) {
             e.preventDefault();
-
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.innerText;
-
-            btn.innerText = "Processing...";
+            btn.innerText = "Processing Payment...";
             btn.disabled = true;
 
-            const payload = {
-                name: document.getElementById("customer-name").value.trim(),
-                phone: document.getElementById("customer-phone").value.trim(),
-                service: document.getElementById("service-select").value,
-                date: document.getElementById("booking-date").value,
-                time: document.getElementById("booking-time").value
-            };
+            const name = document.getElementById("customer-name").value.trim();
+            const phone = document.getElementById("customer-phone").value.trim();
+            const service = document.getElementById("service-select").value;
+            const date = document.getElementById("booking-date").value;
+            const time = document.getElementById("booking-time").value;
 
-            if (!payload.name || !payload.phone || !payload.service || !payload.date || !payload.time) {
+            if (!name || !phone || !service || !date || !time) {
                 setBookingMsg("Please fill all fields", "error");
                 btn.innerText = originalText;
                 btn.disabled = false;
@@ -736,29 +734,20 @@
                 const res = await fetch(`${API_BASE}/create-checkout-session`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ name, phone, service, date, time })
                 });
 
-                // ✅ FIX: handle HTML error properly
-                const text = await res.text();
-                let data;
+                const data = await res.json();
 
-                try {
-                    data = JSON.parse(text);
-                } catch {
-                    throw new Error("Server returned invalid response");
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    throw new Error("No checkout URL returned");
                 }
-
-                if (!res.ok) throw new Error(data.error || "Server error");
-
-                if (!data.url) throw new Error("No payment link returned");
-
-                window.location.href = data.url;
 
             } catch (err) {
                 console.error(err);
-                setBookingMsg(`❌ ${err.message}`, "error");
-
+                setBookingMsg("❌ Error processing request. Please try again.", "error");
                 btn.innerText = originalText;
                 btn.disabled = false;
             }
@@ -770,10 +759,11 @@
             el.innerText = msg;
         }
 
-        // ================= ADMIN =================
+        // --- ADMIN DASHBOARD LOGIC ---
 
         function checkAdminAccess() {
-            new bootstrap.Modal(document.getElementById("loginModal")).show();
+            const modal = new bootstrap.Modal(document.getElementById("loginModal"));
+            modal.show();
         }
 
         function attemptLogin() {
@@ -792,45 +782,112 @@
         }
 
         async function refreshAdminUI() {
+            const btn = document.getElementById("refreshBtn");
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+            }
+
             const bookings = await fetchBookings();
-            const active = bookings.filter(b => b.status === "active");
 
-            const today = new Date().toISOString().split('T')[0];
+            // Filter only active bookings for stats and table
+            const activeBookings = bookings.filter(b => b.status === "active");
 
-            document.getElementById("stat-today").innerText =
-                active.filter(b => b.date === today).length;
+            const todayStr = new Date().toISOString().split('T')[0];
 
-            document.getElementById("stat-revenue").innerText =
-                "£" + active.reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
+            // Stats
+            const todayCount = activeBookings.filter(b => b.date === todayStr).length;
+            const revenue = activeBookings.reduce((sum, b) => sum + (priceMap[b.service] || 0), 0);
 
-            document.getElementById("stat-active").innerText = active.length;
+            document.getElementById("stat-today").innerText = todayCount;
+            document.getElementById("stat-revenue").innerText = "£" + revenue;
+            document.getElementById("stat-active").innerText = activeBookings.length;
             document.getElementById("stat-total").innerText = bookings.length;
 
+            // Table
             const tbody = document.getElementById("adminTableBody");
             tbody.innerHTML = "";
 
-            active.forEach(b => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                <td><strong>${escapeHtml(b.name)}</strong><br><small>${b.phone}</small></td>
-                <td>${b.service}</td>
-                <td>${b.date}<br><span class="text-gold">${b.time}</span></td>
-                <td><span class="badge bg-success">Active</span></td>
-                <td><button class="btn btn-sm btn-danger" onclick="deleteBookingOnServer(${b.id})">Delete</button></td>
-            `;
-                tbody.appendChild(tr);
+            const sorted = [...activeBookings].sort((a, b) => {
+                return new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time);
             });
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">No upcoming bookings</td></tr>`;
+            } else {
+                sorted.forEach(b => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><strong>${escapeHtml(b.name)}</strong><br><small class="text-muted">${b.phone}</small></td>
+                        <td>${b.service}</td>
+                        <td>${b.date}<br><span class="text-gold">${b.time}</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                             <button class="btn btn-sm btn-outline-danger" onclick="deleteBookingOnServer(${b.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            renderCalendar(activeBookings);
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-sync-alt"></i> Refresh`;
+            }
+        }
+
+        function renderCalendar(bookings) {
+            const now = new Date();
+            const month = now.getMonth();
+            const year = now.getFullYear();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById("calendarMonthYear").innerText = `${monthNames[month]} ${year}`;
+
+            const header = document.getElementById("calendarHeader");
+            header.innerHTML = "";
+            ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(day => {
+                const div = document.createElement("div");
+                div.className = "cal-day-header";
+                div.innerText = day;
+                header.appendChild(div);
+            });
+
+            const daysContainer = document.getElementById("calendarDays");
+            daysContainer.innerHTML = "";
+
+            for (let i = 0; i < firstDay; i++) {
+                const div = document.createElement("div");
+                div.className = "cal-day";
+                div.style.background = "transparent";
+                daysContainer.appendChild(div);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const div = document.createElement("div");
+                div.className = "cal-day";
+                div.innerText = i;
+
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                const count = bookings.filter(b => b.date === dateStr).length;
+
+                if (count > 0) {
+                    div.classList.add("has-booking");
+                    div.title = `${count} booking(s)`;
+                }
+                daysContainer.appendChild(div);
+            }
         }
 
         function escapeHtml(str) {
-            return String(str || '').replace(/[&<>"']/g, m => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;',
-                '"': '&quot;', "'": '&#39;'
-            })[m]);
+            return String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
         }
 
-        // ================= INIT =================
-
+        // Initialize
         document.addEventListener("DOMContentLoaded", () => {
             populateAvailableDates();
             document.getElementById("booking-form").addEventListener("submit", submitBooking);
