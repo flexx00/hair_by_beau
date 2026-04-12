@@ -2,58 +2,39 @@ const express = require("express");
 const cors = require("cors");
 const twilio = require("twilio");
 const Stripe = require("stripe");
-const fs = require("fs");
-const path = require("path");
 
 const app = express();
-
-// ================= CONFIG =================
-const PORT = process.env.PORT || 3000;
-const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
-
-// ================= MIDDLEWARE =================
 app.use(cors());
 
-// ⚠️ Stripe webhook must be BEFORE json
+// ================= PORT =================
+const PORT = process.env.PORT || 3000;
+
+// ================= BASE URL =================
+// 🔥 Uses your custom domain automatically
+const BASE_URL =
+    process.env.NODE_ENV === "production"
+        ? "https://hairbybeau.com"
+        : "http://localhost:3000";
+
+// ================= MIDDLEWARE =================
 app.use("/webhook", express.raw({ type: "application/json" }));
-
 app.use(express.json());
-
-// ================= FILE STORAGE =================
-const BOOKINGS_FILE = path.join(__dirname, "bookings.json");
-
-function loadBookings() {
-    try {
-        if (fs.existsSync(BOOKINGS_FILE)) {
-            return JSON.parse(fs.readFileSync(BOOKINGS_FILE));
-        }
-        return [];
-    } catch (err) {
-        console.error("❌ Failed to load bookings:", err);
-        return [];
-    }
-}
-
-function saveBookings() {
-    try {
-        fs.writeFileSync(BOOKINGS_FILE, JSON.stringify(bookings, null, 2));
-    } catch (err) {
-        console.error("❌ Failed to save bookings:", err);
-    }
-}
-
-let bookings = loadBookings();
+app.use(express.static(__dirname));
 
 // ================= KEYS =================
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+// ⚠️ Move to ENV later for security
+const stripe = Stripe("pk_live_51TBKY3QtbyUXSAuNIKlvqwCLCID6rRbT8SVRpR4qofhecC4yY32e9X1sTZmemOKX7SQ7zQZX6iwSCgbc4ODqa9y700jfJOLSBM");
+const endpointSecret = "mk_1TBKYGQtbyUXSAuNLA1sh0c1";
 
 const client = twilio(
-    process.env.TWILIO_SID,
-    process.env.TWILIO_AUTH
+    "AC4598af68d81c78de170b6529d318eda7",
+    "81da45b7bb682348024e4f017671c673"
 );
 
-const twilioNumber = process.env.TWILIO_PHONE;
+const twilioNumber = "+447460963690";
+
+// ================= TEMP STORAGE =================
+let bookings = [];
 
 // ================= PRICE =================
 function getPrice(service) {
@@ -88,27 +69,27 @@ async function sendSMS({ phone, name, service, date, time }) {
 
         console.log("📩 Sending SMS to:", formattedPhone);
 
-        const msg = await client.messages.create({
+        await client.messages.create({
             body: `Hi ${name}! 💖 Your ${service} booking is confirmed for ${date} at ${time}.`,
             from: twilioNumber,
             to: formattedPhone,
         });
 
-        console.log("✅ SMS SENT:", msg.sid);
-
+        console.log("✅ SMS SENT SUCCESSFULLY");
     } catch (err) {
-        console.error("❌ SMS ERROR FULL:", err);
+        console.error("❌ SMS ERROR:", err.message);
     }
 }
+
 // ================= CREATE CHECKOUT =================
 app.post("/create-checkout-session", async (req, res) => {
+    const { name, phone, service, date, time } = req.body;
+
+    if (!name || !phone || !service || !date || !time) {
+        return res.status(400).json({ error: "Missing booking data" });
+    }
+
     try {
-        const { name, phone, service, date, time } = req.body;
-
-        if (!name || !phone || !service || !date || !time) {
-            return res.status(400).json({ error: "Missing booking data" });
-        }
-
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
             payment_method_types: ["card"],
@@ -122,17 +103,19 @@ app.post("/create-checkout-session", async (req, res) => {
                     quantity: 1,
                 },
             ],
+
+            // ✅ FIXED URL (THIS WAS YOUR MAIN ISSUE)
             success_url: `${BASE_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${BASE_URL}`,
+
             metadata: { name, phone, service, date, time },
         });
 
-        console.log("💳 Stripe session:", session.id);
+        console.log("💳 Stripe session created:", session.id);
 
         res.json({ url: session.url });
-
     } catch (err) {
-        console.error("❌ STRIPE ERROR:", err);
+        console.error("❌ Stripe error:", err.message);
         res.status(500).json({ error: err.message });
     }
 });
@@ -147,22 +130,21 @@ app.get("/session/:id", async (req, res) => {
         }
 
         res.json({ booking: session.metadata });
-
     } catch (err) {
-        console.error("❌ Session error:", err);
+        console.error("❌ Session fetch error:", err.message);
         res.status(500).json({ error: "Failed to retrieve session" });
     }
 });
 
 // ================= WEBHOOK =================
-app.post("/webhook", async (req, res) => {
+app.post("/webhook", (req, res) => {
+    const sig = req.headers["stripe-signature"];
     let event;
 
     try {
-        const sig = req.headers["stripe-signature"];
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
-        console.error("❌ Webhook error:", err.message);
+        console.error("❌ Webhook signature error:", err.message);
         return res.sendStatus(400);
     }
 
@@ -172,46 +154,22 @@ app.post("/webhook", async (req, res) => {
 
         console.log("💳 PAYMENT SUCCESS:", booking);
 
-        const newBooking = {
+        bookings.push({
             id: Date.now(),
             ...booking,
             status: "active",
-        };
+        });
 
-        bookings.push(newBooking);
-        saveBookings();
-
-        await sendSMS(booking);
+        // ✅ SMS sent AFTER payment success
+        sendSMS(booking);
     }
 
     res.json({ received: true });
 });
 
-// ================= BOOKINGS =================
-app.get("/bookings", (req, res) => {
-    res.json(bookings);
-});
-
-app.delete("/bookings/:id", (req, res) => {
-    const id = Number(req.params.id);
-
-    bookings = bookings.filter(b => b.id !== id);
-    saveBookings();
-
-    res.json({ success: true });
-});
-
 // ================= HEALTH =================
 app.get("/health", (req, res) => {
     res.json({ status: "ok" });
-});
-
-// ================= STATIC FILES =================
-app.use(express.static(__dirname));
-
-// ================= FRONTEND ROUTE =================
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // ================= START =================
