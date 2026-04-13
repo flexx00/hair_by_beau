@@ -23,8 +23,8 @@ app.use(express.static(__dirname));
 
 // ================= KEYS =================
 // ⚠️ Move to ENV later for security
-const stripe = Stripe("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");
-const endpointSecret = "mk_1TBKYGQtbyUXSAuNLA1sh0c1";
+const stripe = Stripe("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");
+const endpointSecret = "whsec_JXQZ76Zw7EykOr92W1yGxfFjnVDHsYAL";
 
 const client = twilio(
     "AC4598af68d81c78de170b6529d318eda7",
